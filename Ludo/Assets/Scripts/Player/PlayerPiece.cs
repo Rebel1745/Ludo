@@ -4,15 +4,12 @@ using UnityEngine;
 
 public class PlayerPiece : MonoBehaviour
 {
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
+    // Player info
+    public int PlayerId;
+    public string PlayerName;
+    public bool IsCPU;
+    public Vector3 startingPosition;
+    public Tile StartingTile;
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
+
 }
