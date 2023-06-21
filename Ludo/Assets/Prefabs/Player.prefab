@@ -107,6 +107,7 @@ GameObject:
   m_Component:
   - component: {fileID: 8903011820676971112}
   - component: {fileID: 1074550825620591207}
+  - component: {fileID: 5571560125896532255}
   m_Layer: 0
   m_Name: Player
   m_TagString: Untagged
@@ -142,3 +143,34 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a22d6083b3a28d042a95558a0f008164, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  PlayerId: 0
+  PlayerName: 
+  IsCPU: 0
+  startingPosition: {x: 0, y: 0, z: 0}
+  StartingTile: {fileID: 0}
+  IsInYard: 1
+  IsScored: 0
+  smoothTimeMultiplier: 1
+  maxHeightMultiplier: 1
+  heightCurve:
+    serializedVersion: 2
+    m_Curve: []
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+--- !u!54 &5571560125896532255
+Rigidbody:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7398688189274225705}
+  serializedVersion: 2
+  m_Mass: 1
+  m_Drag: 0
+  m_AngularDrag: 0.05
+  m_UseGravity: 0
+  m_IsKinematic: 1
+  m_Interpolate: 0
+  m_Constraints: 0
+  m_CollisionDetection: 0

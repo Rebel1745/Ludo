@@ -20,6 +20,9 @@ public class GameManager : MonoBehaviour
     string currentPlayerName;
     public bool IsCurrentPlayerCPU = false;
 
+    public int CurrentPlayerRollAgainCount = 0;
+    public int MaximumRollAgain = 3;
+
     private void Awake()
     {
         instance = this;
@@ -86,12 +89,20 @@ public class GameManager : MonoBehaviour
 
     private void RollAgain()
     {
-        throw new NotImplementedException();
+        if (CurrentPlayerRollAgainCount <= MaximumRollAgain)
+            UpdateGameState(GameState.WaitingForRoll);
+        else
+            print("If I see this message, something went wrong");
     }
 
     private void NewTurn()
     {
-        throw new NotImplementedException();
+        // advance player
+        CurrentPlayerId = (CurrentPlayerId + 1) % totalPlayers;
+        UpdateCurrentPlayerDetails();
+        CurrentPlayerRollAgainCount = 0;
+
+        UpdateGameState(GameState.WaitingForRoll);
     }
 
     private void WaitingForClick()
