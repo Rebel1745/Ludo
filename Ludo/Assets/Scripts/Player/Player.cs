@@ -7,5 +7,5 @@ public class Player
     public int PlayerId;
     public string PlayerName;
     public bool IsPlayerCPU = false;
-
+    public PlayerPiece[] PlayerPieces;
 }

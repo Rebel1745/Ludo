@@ -52,6 +52,13 @@ public class GameManager : MonoBehaviour
             case GameState.WaitingForRoll:
                 WaitingForRoll();
                 break;
+            case GameState.CheckForLegalMove:
+                // if the player has a legal move, wait for it, otherwise move on to the next player
+                if (PlayerManager.instance.PlayerHasLegalMove())
+                    UpdateGameState(GameState.WaitingForClick);
+                else
+                    UpdateGameState(GameState.NextTurn);
+                break;
             case GameState.WaitingForClick:
                 WaitingForClick();
                 break;
@@ -138,6 +145,7 @@ public enum GameState
     SetupPlayers,
     SetupGame,
     WaitingForRoll,
+    CheckForLegalMove,
     WaitingForClick,
     WaitingForAnimation,
     NextTurn,

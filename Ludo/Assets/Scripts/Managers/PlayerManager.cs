@@ -47,7 +47,8 @@ public class PlayerManager : MonoBehaviour
             {
                 PlayerId = i,
                 PlayerName = newPlayerName,
-                IsPlayerCPU = false
+                IsPlayerCPU = false,
+                PlayerPieces = new PlayerPiece[playerYardHolder.GetChild(i).childCount]
             };
 
             // loop through the tiles inside the players yard
@@ -61,10 +62,35 @@ public class PlayerManager : MonoBehaviour
                 newPlayerPiece.startingPosition = playerYardHolder.GetChild(i).GetChild(j).position;
                 newPlayerPiece.GetComponentInChildren<Renderer>().material = playerMaterials[i];
                 newPlayerPiece.StartingTile = playerStartingTiles[i];
+
+                // add this piece to the player array
+                Players[i].PlayerPieces[j] = newPlayerPiece;
             }
         }
 
         // after the players have been created move the game on
         GameManager.instance.UpdateGameState(GameState.SetupGame);
+    }
+
+    public bool PlayerHasLegalMove()
+    {
+        // the dice has been rolled, does the player have a leagl move?
+        // if not, move on to the next turn
+
+        // if a 6 is rolled, we can always do someting. 
+        //TODO: This is not true when only one piece remains and it is in the safe zone
+        if (GameManager.instance.DiceTotal == 6)
+            return true;
+
+        // first loop through all of the pieces for this player
+        foreach (PlayerPiece pp in Players[GameManager.instance.CurrentPlayerId].PlayerPieces)
+        {
+            // roll 1 - 5 at least one piece is out of the yard - can move
+            if (!pp.IsInYard && !pp.IsScored)
+                return true;
+
+        }
+
+        return false;
     }
 }

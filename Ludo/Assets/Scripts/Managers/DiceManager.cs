@@ -92,8 +92,8 @@ public class DiceManager : MonoBehaviour
 
         isRolling = false;
 
-        // move on to the piece clicking
-        GameManager.instance.UpdateGameState(GameState.WaitingForClick);
+        // move on to check if the player has a legal move
+        GameManager.instance.UpdateGameState(GameState.CheckForLegalMove);
     }
 
     public void SetDice(int number)
