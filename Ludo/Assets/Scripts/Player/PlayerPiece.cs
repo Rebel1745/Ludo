@@ -9,14 +9,14 @@ public class PlayerPiece : MonoBehaviour
     public int PlayerId;
     public string PlayerName;
     public bool IsCPU;
-    public Vector3 startingPosition;
+    public Vector3 StartingPositionInYard;
     public Tile StartingTile;
     public bool IsInYard = true; // all pieces start in their yard
     public bool IsScored = false;
-    Tile currentTile;
+    public Tile currentTile;
 
     bool isAnimating = false;
-    bool isCurrentPlayerAnimation = false;
+    public bool isCurrentPlayerAnimation = false;
     int spacesToMove;
 
     // movement variables
@@ -73,11 +73,44 @@ public class PlayerPiece : MonoBehaviour
         }
         else
         {
-            //finished all animations, move to next game state
-            isAnimating = false;
-            if (isCurrentPlayerAnimation)
-                MoveToNextTurn();
+            // animation of this piece finished, check to see if we landed on anyone
+            CheckForOtherPlayerPieceOnTile();
         }
+    }
+
+    void CheckForOtherPlayerPieceOnTile()
+    {
+        if(currentTile != null && !IsInYard && currentTile.PlayerPiece != null && currentTile.PlayerPiece != this)
+        {
+            PlayerPiece pieceToSendBack = currentTile.PlayerPiece;
+            // set us as the player piece on this tile
+            currentTile.PlayerPiece = this;
+            // there is a piece on this tile, send it back to its yard
+            ReturnPieceToYard(pieceToSendBack);
+        }
+        else
+        {
+            // no other piece on this tile we have finished all animations, move to next game state
+            FinishAllAnimations();
+        }        
+    }
+
+    public void ReturnPieceToYard(PlayerPiece pp)
+    {
+        moveQueue = null;
+        pp.SetNewTargetPosition(pp.StartingPositionInYard);
+        pp.IsInYard = true;
+        pp.isCurrentPlayerAnimation = false; // set this to indicate this animation was not triggered on the players turn
+        pp.currentTile = null;
+    }
+
+    void FinishAllAnimations()
+    {
+        if(!IsInYard)
+            currentTile.PlayerPiece = this;
+        isAnimating = false;
+        if (isCurrentPlayerAnimation)
+            MoveToNextTurn();
     }
 
     // move this to player manager
@@ -90,7 +123,7 @@ public class PlayerPiece : MonoBehaviour
             GameManager.instance.UpdateGameState(GameState.NextTurn);
     }
 
-    void SetNewTargetPosition(Vector3 pos)
+    public void SetNewTargetPosition(Vector3 pos)
     {
         // update the info text to count to the dice total
         if (moveQueueIndex == 0)
@@ -100,6 +133,7 @@ public class PlayerPiece : MonoBehaviour
             GameManager.instance.SetInfoText(GameManager.instance.GetInfoText() + " ... " + (moveQueueIndex + 1).ToString());
         }
 
+        isAnimating = true;
         targetPosition = pos;
         velocity = Vector3.zero;
         heightTime = 0f;
@@ -115,6 +149,9 @@ public class PlayerPiece : MonoBehaviour
         if (PlayerId != GameManager.instance.CurrentPlayerId)
             return;
 
+        if (!PlayerManager.instance.PlayerPieceHasLegalMove(this))
+            return;
+
         SelectPiece();
     }
 
@@ -123,9 +160,10 @@ public class PlayerPiece : MonoBehaviour
         // move this piece
         spacesToMove = GameManager.instance.DiceTotal;
 
+        // the below should now be taken care of in the PlayerPieceHasLegalMove function, if everything works, remove the below code
         // if we haven't rolled a 6, and this piece is in its yard, bail
-        if (IsInYard && spacesToMove != 6)
-            return;
+        /*if (IsInYard && spacesToMove != 6)
+            return;*/
 
         isCurrentPlayerAnimation = true;
 

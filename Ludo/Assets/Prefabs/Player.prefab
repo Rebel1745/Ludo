@@ -162,11 +162,13 @@ MonoBehaviour:
   PlayerId: 0
   PlayerName: 
   IsCPU: 0
-  startingPosition: {x: 0, y: 0, z: 0}
+  StartingPositionInYard: {x: 0, y: 0, z: 0}
   StartingTile: {fileID: 0}
   IsInYard: 1
   IsScored: 0
-  smoothTimeMultiplier: 1
+  currentTile: {fileID: 0}
+  isCurrentPlayerAnimation: 0
+  smoothTimeMultiplier: 5
   maxHeightMultiplier: 1
   heightCurve:
     serializedVersion: 2

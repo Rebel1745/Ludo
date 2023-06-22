@@ -63,7 +63,7 @@ public class GameManager : MonoBehaviour
                 WaitingForClick();
                 break;
             case GameState.NextTurn:
-                NewTurn();
+                NextTurn();
                 break;
             case GameState.RollAgain:
                 RollAgain();
@@ -102,7 +102,7 @@ public class GameManager : MonoBehaviour
             print("If I see this message, something went wrong");
     }
 
-    private void NewTurn()
+    private void NextTurn()
     {
         // advance player
         CurrentPlayerId = (CurrentPlayerId + 1) % totalPlayers;

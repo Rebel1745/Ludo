@@ -59,7 +59,7 @@ public class PlayerManager : MonoBehaviour
 
                 newPlayerPiece = newPlayer.GetComponent<PlayerPiece>();
                 newPlayerPiece.PlayerId = i;
-                newPlayerPiece.startingPosition = playerYardHolder.GetChild(i).GetChild(j).position;
+                newPlayerPiece.StartingPositionInYard = playerYardHolder.GetChild(i).GetChild(j).position;
                 newPlayerPiece.GetComponentInChildren<Renderer>().material = playerMaterials[i];
                 newPlayerPiece.StartingTile = playerStartingTiles[i];
 
@@ -77,19 +77,26 @@ public class PlayerManager : MonoBehaviour
         // the dice has been rolled, does the player have a leagl move?
         // if not, move on to the next turn
 
+        // first loop through all of the pieces for this player
+        foreach (PlayerPiece pp in Players[GameManager.instance.CurrentPlayerId].PlayerPieces)
+        {
+            if(PlayerPieceHasLegalMove(pp))
+                return true;
+        }
+
+        return false;
+    }
+
+    public bool PlayerPieceHasLegalMove(PlayerPiece pp)
+    {
         // if a 6 is rolled, we can always do someting. 
         //TODO: This is not true when only one piece remains and it is in the safe zone
         if (GameManager.instance.DiceTotal == 6)
             return true;
 
-        // first loop through all of the pieces for this player
-        foreach (PlayerPiece pp in Players[GameManager.instance.CurrentPlayerId].PlayerPieces)
-        {
-            // roll 1 - 5 at least one piece is out of the yard - can move
-            if (!pp.IsInYard && !pp.IsScored)
-                return true;
-
-        }
+        // roll 1 - 5 at least one piece is out of the yard - can move
+        if (!pp.IsInYard && !pp.IsScored)
+            return true;
 
         return false;
     }
