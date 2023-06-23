@@ -14,9 +14,74 @@ public class PlayerManager : MonoBehaviour
 
     public Player[] Players;
 
+    // animation
+    bool isAnimating = false;
+    List<PlayerPieceMovement> movementList;
+    Vector3 velocity = Vector3.zero;
+    float smoothTime = 0.25f;
+
     private void Awake()
     {
         instance = this;
+        movementList = new List<PlayerPieceMovement>();
+    }
+
+    private void Update()
+    {
+        if (GameManager.instance.State != GameState.WaitingForAnimation || !isAnimating)
+            return;
+
+        if (movementList.Count == 0)
+            return;
+
+        MovePieces();
+    }
+
+    void MovePieces()
+    {
+        // first check if we have reached the target of the first element in the moveList
+        if(Vector3.Distance(movementList[0].PieceToMove.transform.position, movementList[0].DestinationTile.transform.position) < 0.01)
+        {
+            // we are at our destination, update the movementList to remove this movement
+            AdvanceMovementList();
+        }
+        else
+        {
+            movementList[0].PieceToMove.transform.position = Vector3.SmoothDamp(movementList[0].PieceToMove.transform.position, movementList[0].DestinationTile.transform.position, ref velocity, smoothTime);
+        }        
+    }
+
+    void AdvanceMovementList()
+    {
+        if(movementList.Count == 1)
+        {
+            // we have finished our list of movements
+            isAnimating = false;
+            movementList.Clear();
+            MoveToNextTurn();
+        }
+        else
+        {
+            // we still have movements left, remove the one we have just performed
+            movementList.RemoveAt(0);
+        }
+    }
+
+    
+    void MoveToNextTurn()
+    {
+        //allow another roll if a 6 was rolled, otherwise move on to next turn
+        if (GameManager.instance.DiceTotal == 6)
+            GameManager.instance.UpdateGameState(GameState.RollAgain);
+        else
+            GameManager.instance.UpdateGameState(GameState.NextTurn);
+    }
+
+    public void SetMoveQueue(List<PlayerPieceMovement> ppms)
+    {
+        movementList = ppms;
+        isAnimating = true;
+        GameManager.instance.UpdateGameState(GameState.WaitingForAnimation);
     }
 
     public void CreatePlayers()
@@ -25,6 +90,7 @@ public class PlayerManager : MonoBehaviour
         GameObject newPlayer;
         PlayerPiece newPlayerPiece;
         string newPlayerName;
+        Tile startingYardTile;
 
         // init players array
         Players = new Player[playerYardHolder.childCount];
@@ -54,12 +120,15 @@ public class PlayerManager : MonoBehaviour
             // loop through the tiles inside the players yard
             for (int j = 0; j < playerYardHolder.GetChild(i).childCount; j++)
             {
+                startingYardTile = playerYardHolder.GetChild(i).GetChild(j).GetComponent<Tile>();
                 // create a player piece on the yard tile
-                newPlayer = Instantiate(playerPrefab, playerYardHolder.GetChild(i).GetChild(j).position, Quaternion.identity, newPlayerParent.transform);
+                newPlayer = Instantiate(playerPrefab, startingYardTile.transform.position, Quaternion.identity, newPlayerParent.transform);
 
+                // TODO: move the below into a function on the PlayerPiece
                 newPlayerPiece = newPlayer.GetComponent<PlayerPiece>();
                 newPlayerPiece.PlayerId = i;
-                newPlayerPiece.StartingPositionInYard = playerYardHolder.GetChild(i).GetChild(j).position;
+                //newPlayerPiece.StartingPositionInYard = playerYardHolder.GetChild(i).GetChild(j).position;
+                newPlayerPiece.StartingYardTile = startingYardTile;
                 newPlayerPiece.GetComponentInChildren<Renderer>().material = playerMaterials[i];
                 newPlayerPiece.StartingTile = playerStartingTiles[i];
 

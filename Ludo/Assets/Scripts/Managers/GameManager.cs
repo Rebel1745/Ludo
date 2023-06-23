@@ -17,7 +17,7 @@ public class GameManager : MonoBehaviour
     // Players
     int totalPlayers;
     public int CurrentPlayerId;
-    string currentPlayerName;
+    public string CurrentPlayerName;
     public bool IsCurrentPlayerCPU = false;
 
     public int CurrentPlayerRollAgainCount = 0;
@@ -90,7 +90,7 @@ public class GameManager : MonoBehaviour
 
     void UpdateCurrentPlayerDetails()
     {
-        currentPlayerName = PlayerManager.instance.Players[CurrentPlayerId].PlayerName;
+        CurrentPlayerName = PlayerManager.instance.Players[CurrentPlayerId].PlayerName;
         IsCurrentPlayerCPU = PlayerManager.instance.Players[CurrentPlayerId].IsPlayerCPU;
     }
 
@@ -114,13 +114,13 @@ public class GameManager : MonoBehaviour
 
     private void WaitingForClick()
     {
-        SetInfoText(currentPlayerName + " click piece to move");
+        SetInfoText(CurrentPlayerName + " click piece to move");
     }
 
     private void WaitingForRoll()
     {
         DiceManager.instance.SetDice(0);
-        SetInfoText(currentPlayerName + " to roll");
+        SetInfoText(CurrentPlayerName + " to roll");
     }
 
     private void SelectPlayerDetails()
