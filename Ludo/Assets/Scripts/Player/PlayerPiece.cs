@@ -63,6 +63,8 @@ public class PlayerPiece : MonoBehaviour
 
     void BuildMovementList()
     {
+        Tile destTile;
+
         movementList.Clear();
 
         // if we are on a tile then remove this piece from it
@@ -88,15 +90,20 @@ public class PlayerPiece : MonoBehaviour
         {
             for (int i = 0; i < GameManager.instance.DiceTotal; i++)
             {
+                if (currentTile.IsBranchTile && currentTile.PlayerIdForBranch == GameManager.instance.CurrentPlayerId)
+                    destTile = currentTile.TileToBranchTo;
+                else
+                    destTile = currentTile.NextTile;
+
                 newMovement = new PlayerPieceMovement
                 {
                     PieceToMove = this,
-                    DestinationTile = currentTile.NextTile,
+                    DestinationTile = destTile,
                     InfoTextToDisplay = GameManager.instance.GetInfoText() + " ... " + i
                 };
 
                 movementList.Add(newMovement);
-                currentTile = currentTile.NextTile;
+                currentTile = destTile;
             }
         }
 
