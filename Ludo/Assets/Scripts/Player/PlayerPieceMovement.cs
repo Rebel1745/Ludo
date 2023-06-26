@@ -7,4 +7,5 @@ public class PlayerPieceMovement
     public PlayerPiece PieceToMove;
     public Tile DestinationTile;
     public string InfoTextToDisplay;
+    public bool IsScoringMove = false;
 }

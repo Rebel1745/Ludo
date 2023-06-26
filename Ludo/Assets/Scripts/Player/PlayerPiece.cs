@@ -9,14 +9,13 @@ public class PlayerPiece : MonoBehaviour
     public int PlayerId;
     public string PlayerName;
     public bool IsCPU;
-    //public Vector3 StartingPositionInYard;
     public Tile StartingYardTile;
+    public Tile ScoringTile;
     public Tile StartingTile;
     public bool IsInYard = true; // all pieces start in their yard
     public bool IsScored = false;
-    public Tile currentTile;
-
-    bool isAnimating = false;
+    public Tile CurrentTile;
+    
     public bool isCurrentPlayerAnimation = false;
     int spacesToMove;
 
@@ -63,13 +62,13 @@ public class PlayerPiece : MonoBehaviour
 
     void BuildMovementList()
     {
-        Tile destTile;
+        Tile[] tilesAhead = new Tile[GameManager.instance.DiceTotal];
 
         movementList.Clear();
 
         // if we are on a tile then remove this piece from it
-        if (currentTile != null)
-            currentTile.PlayerPiece = null;
+        if (CurrentTile != null)
+            CurrentTile.PlayerPiece = null;
 
         PlayerPieceMovement newMovement;
 
@@ -83,50 +82,65 @@ public class PlayerPiece : MonoBehaviour
             };
 
             movementList.Add(newMovement);
-            currentTile = StartingTile;
+            CurrentTile = StartingTile;
             IsInYard = false;
         }
         else
         {
-            for (int i = 0; i < GameManager.instance.DiceTotal; i++)
-            {
-                if (currentTile.IsBranchTile && currentTile.PlayerIdForBranch == GameManager.instance.CurrentPlayerId)
-                    destTile = currentTile.TileToBranchTo;
-                else
-                    destTile = currentTile.NextTile;
+            tilesAhead = PlayerManager.instance.GetTilesAhead(this, GameManager.instance.DiceTotal);
 
+            for (int i = 0; i < tilesAhead.Length; i++)
+            {
                 newMovement = new PlayerPieceMovement
                 {
                     PieceToMove = this,
-                    DestinationTile = destTile,
+                    DestinationTile = tilesAhead[i],
                     InfoTextToDisplay = GameManager.instance.GetInfoText() + " ... " + i
                 };
 
                 movementList.Add(newMovement);
-                currentTile = destTile;
+                CurrentTile = tilesAhead[i];
             }
         }
 
         // now check to see if we will land on anyone and if we do add them to the movement list with their destination as their yard
         // if there is a piece on the final tile, and that piece does not belong to the player currently moving
-        if(currentTile.PlayerPiece != null && currentTile.PlayerPiece.PlayerId != GameManager.instance.CurrentPlayerId)
+        if(CurrentTile.PlayerPiece != null && CurrentTile.PlayerPiece.PlayerId != GameManager.instance.CurrentPlayerId)
         {
             newMovement = new PlayerPieceMovement
             {
-                PieceToMove = currentTile.PlayerPiece,
-                DestinationTile = currentTile.PlayerPiece.StartingYardTile,
-                InfoTextToDisplay = GameManager.instance.CurrentPlayerName + " landed on " + currentTile.PlayerPiece.PlayerName + ". Sending " + currentTile.PlayerPiece.PlayerName + " back home"
+                PieceToMove = CurrentTile.PlayerPiece,
+                DestinationTile = CurrentTile.PlayerPiece.StartingYardTile,
+                InfoTextToDisplay = GameManager.instance.CurrentPlayerName + " landed on " + CurrentTile.PlayerPiece.PlayerName + ". Sending " + CurrentTile.PlayerPiece.PlayerName + " back home"
             };
 
             movementList.Add(newMovement);
 
-            // set the player going home as having no currentTile
-            currentTile.PlayerPiece.currentTile = null;
-            currentTile.PlayerPiece.IsInYard = true;
+            // set the player going home as having no CurrentTile
+            CurrentTile.PlayerPiece.CurrentTile = null;
+            CurrentTile.PlayerPiece.IsInYard = true;
         }
 
-        // finally, set this PlayerPiece to be on the currentTile
-        currentTile.PlayerPiece = this;
+        // check the current tile to see if it is the scoring tile.
+        // if it is, add a movement to the 'scored' area
+        if (CurrentTile.IsScoringTile)
+        {
+            // this piece has scored
+            newMovement = new PlayerPieceMovement
+            {
+                PieceToMove = this,
+                DestinationTile = ScoringTile,
+                InfoTextToDisplay = "Congratulations, this piece has scored!",
+                IsScoringMove = true
+            };
+
+            movementList.Add(newMovement);
+            //TODO: Instead of scoring the piece now, wait until after the animation has finished and then score it.  Perhaps in AdvanceMovementList
+            this.IsScored = true;
+        }
+
+        // finally, set this PlayerPiece to be on the CurrentTile
+        CurrentTile.PlayerPiece = this;
 
         PlayerManager.instance.SetMoveQueue(movementList);
     }

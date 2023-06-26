@@ -9,4 +9,5 @@ public class Tile : MonoBehaviour
     public Tile TileToBranchTo; // the first safe zone tile
     public int PlayerIdForBranch; // the Id of the player than can move to this safe zone
     public PlayerPiece PlayerPiece; // the piece currently on this tile. TODO: make this a list so there can be multiple pieces on each tile
+    public bool IsScoringTile;
 }

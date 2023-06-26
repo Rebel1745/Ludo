@@ -11,6 +11,7 @@ public class PlayerManager : MonoBehaviour
     [SerializeField] GameObject playerPrefab;
     [SerializeField] Transform playersHolder;
     [SerializeField] Tile[] playerStartingTiles;
+    [SerializeField] Transform playerScoringTileHolder;
 
     public Player[] Players;
 
@@ -18,7 +19,7 @@ public class PlayerManager : MonoBehaviour
     bool isAnimating = false;
     List<PlayerPieceMovement> movementList;
     Vector3 velocity = Vector3.zero;
-    float smoothTime = 0.25f;
+    [SerializeField] float smoothTime = 0.25f;
 
     private void Awake()
     {
@@ -56,6 +57,7 @@ public class PlayerManager : MonoBehaviour
         if(movementList.Count == 1)
         {
             // we have finished our list of movements
+            // TODO: Check if this was a scoring move, if it was, check if all the players pieces have been scored
             isAnimating = false;
             movementList.Clear();
             MoveToNextTurn();
@@ -90,7 +92,7 @@ public class PlayerManager : MonoBehaviour
         GameObject newPlayer;
         PlayerPiece newPlayerPiece;
         string newPlayerName;
-        Tile startingYardTile;
+        Tile startingYardTile, scoringTile;
 
         // init players array
         Players = new Player[playerYardHolder.childCount];
@@ -121,14 +123,15 @@ public class PlayerManager : MonoBehaviour
             for (int j = 0; j < playerYardHolder.GetChild(i).childCount; j++)
             {
                 startingYardTile = playerYardHolder.GetChild(i).GetChild(j).GetComponent<Tile>();
+                scoringTile = playerScoringTileHolder.GetChild(i).GetChild(j).GetComponent<Tile>();
                 // create a player piece on the yard tile
                 newPlayer = Instantiate(playerPrefab, startingYardTile.transform.position, Quaternion.identity, newPlayerParent.transform);
 
                 // TODO: move the below into a function on the PlayerPiece
                 newPlayerPiece = newPlayer.GetComponent<PlayerPiece>();
                 newPlayerPiece.PlayerId = i;
-                //newPlayerPiece.StartingPositionInYard = playerYardHolder.GetChild(i).GetChild(j).position;
                 newPlayerPiece.StartingYardTile = startingYardTile;
+                newPlayerPiece.ScoringTile = scoringTile;
                 newPlayerPiece.GetComponentInChildren<Renderer>().material = playerMaterials[i];
                 newPlayerPiece.StartingTile = playerStartingTiles[i];
 
@@ -158,15 +161,57 @@ public class PlayerManager : MonoBehaviour
 
     public bool PlayerPieceHasLegalMove(PlayerPiece pp)
     {
-        // if a 6 is rolled, we can always do someting. 
-        //TODO: This is not true when only one piece remains and it is in the safe zone
-        if (GameManager.instance.DiceTotal == 6)
-            return true;
+        int diceTotal = GameManager.instance.DiceTotal;
 
-        // roll 1 - 5 at least one piece is out of the yard - can move
-        if (!pp.IsInYard && !pp.IsScored)
-            return true;
+        // if the piece has already scored then it can't have any legal moves
+        if (pp.IsScored)
+            return false;
 
-        return false;
+        // if the piece is in the yard
+        if (pp.IsInYard)
+        {
+            // we rolled a 6, we can get out of the yard
+            if (diceTotal == 6)
+                return true;
+            // no getting out of the yard
+            else
+                return false;
+        }
+
+        // get the tiles ahead of this piece if it were to move the number on the dice
+        Tile[] tilesAhead = GetTilesAhead(pp, diceTotal);
+        for (int i = 0; i < tilesAhead.Length; i++)
+        {
+            // if tilesAhead[i] is null that means we have overshot the end square, therefore we can't move
+            if (tilesAhead[i] == null)
+                return false;
+        }
+
+        return true;
+    }
+
+    public Tile[] GetTilesAhead(PlayerPiece pp, int spacesAhead)
+    {
+        Tile[] tilesAhead = new Tile[spacesAhead];
+        Tile currentTile = pp.CurrentTile;
+        Tile destTile;
+
+        for (int i = 0; i < GameManager.instance.DiceTotal; i++)
+        {
+            // if there is no next tile then we have reached the end
+            // break out of the loops and return null values for tiles that aren't there
+            if (currentTile.NextTile == null)
+                break;
+
+            if (currentTile.IsBranchTile && currentTile.PlayerIdForBranch == GameManager.instance.CurrentPlayerId)
+                destTile = currentTile.TileToBranchTo;
+            else
+                destTile = currentTile.NextTile;
+
+            tilesAhead[i] = destTile;
+            currentTile = destTile;
+        }
+
+        return tilesAhead;
     }
 }
