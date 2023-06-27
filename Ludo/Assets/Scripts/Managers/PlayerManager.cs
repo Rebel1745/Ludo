@@ -18,6 +18,7 @@ public class PlayerManager : MonoBehaviour
     // animation
     bool isAnimating = false;
     List<PlayerPieceMovement> movementList;
+    Vector3 newPosition;
     Vector3 velocity = Vector3.zero;
     [SerializeField] float smoothTime = 0.25f;
 
@@ -60,14 +61,19 @@ public class PlayerManager : MonoBehaviour
     void MovePieces()
     {
         // first check if we have reached the target of the first element in the moveList
-        if(Vector3.Distance(movementList[0].PieceToMove.transform.position, movementList[0].DestinationTile.transform.position) < 0.01)
+        if (movementList[0].DestinationTile == null)
+            newPosition = movementList[0].DestinationPosition;
+        else
+            newPosition = movementList[0].DestinationTile.transform.position;
+
+        if (Vector3.Distance(movementList[0].PieceToMove.transform.position, newPosition) < 0.01)
         {
             // we are at our destination, update the movementList to remove this movement
             AdvanceMovementList();
         }
         else
         {
-            movementList[0].PieceToMove.transform.position = Vector3.SmoothDamp(movementList[0].PieceToMove.transform.position, movementList[0].DestinationTile.transform.position, ref velocity, smoothTime);
+            movementList[0].PieceToMove.transform.position = Vector3.SmoothDamp(movementList[0].PieceToMove.transform.position, newPosition, ref velocity, smoothTime);
         }        
     }
 
@@ -240,5 +246,21 @@ public class PlayerManager : MonoBehaviour
         }
 
         return tilesAhead;
+    }
+
+    public bool TileContainsOpponentsPiece(Tile tile)
+    {
+        // if there are no pieces on this tile, all good
+        if (tile.PlayerPieces.Count == 0)
+            return false;
+
+        // check  each of the pieces on this tile, if one has a different Id to the current player, we have landed on an enemy
+        foreach(PlayerPiece pp in tile.PlayerPieces)
+        {
+            if (pp.PlayerId != GameManager.instance.CurrentPlayerId)
+                return true;
+        }
+
+        return false;
     }
 }

@@ -68,7 +68,7 @@ public class PlayerPiece : MonoBehaviour
 
         // if we are on a tile then remove this piece from it
         if (CurrentTile != null)
-            CurrentTile.PlayerPiece = null;
+            CurrentTile.PlayerPieces.Remove(this);
 
         PlayerPieceMovement newMovement;
 
@@ -105,25 +105,115 @@ public class PlayerPiece : MonoBehaviour
 
         // now check to see if we will land on anyone and if we do add them to the movement list with their destination as their yard
         // if there is a piece on the final tile, and that piece does not belong to the player currently moving
-        if(CurrentTile.PlayerPiece != null && CurrentTile.PlayerPiece.PlayerId != GameManager.instance.CurrentPlayerId)
+        if(PlayerManager.instance.TileContainsOpponentsPiece(CurrentTile))
         {
-            newMovement = new PlayerPieceMovement
+            // Add a new movement for each of the pieces on this tile
+            // TODO: if there is more than one opponents piece on the tile, should we send this player home instead of the opponent?
+            foreach(PlayerPiece pp in CurrentTile.PlayerPieces)
             {
-                PieceToMove = CurrentTile.PlayerPiece,
-                DestinationTile = CurrentTile.PlayerPiece.StartingYardTile,
-                InfoTextToDisplay = GameManager.instance.CurrentPlayerName + " landed on " + CurrentTile.PlayerPiece.PlayerName + ". Sending " + CurrentTile.PlayerPiece.PlayerName + " back home"
-            };
+                newMovement = new PlayerPieceMovement
+                {
+                    PieceToMove = pp,
+                    DestinationTile = pp.StartingYardTile,
+                    InfoTextToDisplay = GameManager.instance.CurrentPlayerName + " landed on " + pp.PlayerName + ". Sending " + pp.PlayerName + " back home"
+                };
 
-            movementList.Add(newMovement);
+                movementList.Add(newMovement);
 
-            // set the player going home as having no CurrentTile
-            CurrentTile.PlayerPiece.CurrentTile = null;
-            CurrentTile.PlayerPiece.IsInYard = true;
+                // set the player going home as having no CurrentTile
+                pp.CurrentTile = null;
+                pp.IsInYard = true;
+            }
+        }
+        else
+        {
+            // the current tile doesn't contain any opponent pieces, does it include any of our own?
+            if(CurrentTile.PlayerPieces.Count == 1)
+            {
+                // there is one of our pieces on this tile, move it to the first DoublePiecePositions location, and this tile to the other
+                newMovement = new PlayerPieceMovement
+                {
+                    PieceToMove = CurrentTile.PlayerPieces[0],
+                    DestinationPosition = CurrentTile.DoublePiecePositions[0].position
+                };
+
+                movementList.Add(newMovement);
+
+                newMovement = new PlayerPieceMovement
+                {
+                    PieceToMove = this,
+                    DestinationPosition = CurrentTile.DoublePiecePositions[1].position
+                };
+
+                movementList.Add(newMovement);
+            }
+            else if(CurrentTile.PlayerPieces.Count == 2)
+            {
+                // there are two of our pieces on this tile, move them to the TriplePiecePositions locations
+                newMovement = new PlayerPieceMovement
+                {
+                    PieceToMove = CurrentTile.PlayerPieces[0],
+                    DestinationPosition = CurrentTile.TriplePiecePositions[0].position
+                };
+
+                movementList.Add(newMovement);
+
+                newMovement = new PlayerPieceMovement
+                {
+                    PieceToMove = CurrentTile.PlayerPieces[1],
+                    DestinationPosition = CurrentTile.TriplePiecePositions[1].position
+                };
+
+                movementList.Add(newMovement);
+
+                newMovement = new PlayerPieceMovement
+                {
+                    PieceToMove = this,
+                    DestinationPosition = CurrentTile.TriplePiecePositions[2].position
+                };
+
+                movementList.Add(newMovement);
+            }
+            else if (CurrentTile.PlayerPieces.Count == 3)
+            {
+                // there are three of our pieces on this tile, move them to the QuadrouplePiecePositions locations
+                newMovement = new PlayerPieceMovement
+                {
+                    PieceToMove = CurrentTile.PlayerPieces[0],
+                    DestinationPosition = CurrentTile.QuadrouplePiecePositions[0].position
+                };
+
+                movementList.Add(newMovement);
+
+                newMovement = new PlayerPieceMovement
+                {
+                    PieceToMove = CurrentTile.PlayerPieces[1],
+                    DestinationPosition = CurrentTile.QuadrouplePiecePositions[1].position
+                };
+
+                movementList.Add(newMovement);
+
+                newMovement = new PlayerPieceMovement
+                {
+                    PieceToMove = CurrentTile.PlayerPieces[2],
+                    DestinationPosition = CurrentTile.QuadrouplePiecePositions[2].position
+                };
+
+                movementList.Add(newMovement);
+
+                newMovement = new PlayerPieceMovement
+                {
+                    PieceToMove = this,
+                    DestinationPosition = CurrentTile.QuadrouplePiecePositions[3].position
+                };
+
+                movementList.Add(newMovement);
+            }
         }
 
         // set this PlayerPiece to be on the CurrentTile
         // this code comes before the scoring check, as if a tile scores, it is removed from the board and from the centre tile
-        CurrentTile.PlayerPiece = this;
+        CurrentTile.PlayerPieces.Add(this);
 
         // check the current tile to see if it is the scoring tile.
         // if it is, add a movement to the 'scored' area
@@ -142,7 +232,7 @@ public class PlayerPiece : MonoBehaviour
             //TODO: Instead of scoring the piece now, wait until after the animation has finished and then score it.  Perhaps in AdvanceMovementList
             this.IsScored = true;
             // remove this piece from the centre tile
-            CurrentTile.PlayerPiece = null;
+            CurrentTile.PlayerPieces.Remove(this);
         }
 
         PlayerManager.instance.SetMoveQueue(movementList);
