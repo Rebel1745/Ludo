@@ -29,6 +29,9 @@ public class PlayerManager : MonoBehaviour
 
     private void Update()
     {
+        if (GameManager.instance.State == GameState.WaitingForClick && GameManager.instance.IsCurrentPlayerCPU)
+            SelectCPUPiece();
+
         if (GameManager.instance.State != GameState.WaitingForAnimation || !isAnimating)
             return;
 
@@ -36,6 +39,22 @@ public class PlayerManager : MonoBehaviour
             return;
 
         MovePieces();
+    }
+
+    void SelectCPUPiece()
+    {
+        List<PlayerPiece> legalPieces = new List<PlayerPiece>();
+
+        // fisrt get all of the pieces that can make a move
+        foreach (PlayerPiece pp in Players[GameManager.instance.CurrentPlayerId].PlayerPieces)
+        {
+            if (PlayerPieceHasLegalMove(pp))
+                legalPieces.Add(pp);
+        }
+
+        // select a random piece from this list to move
+        // TODO: make this AI more complicated
+        legalPieces[Random.Range(0, legalPieces.Count)].BuildMovementList();
     }
 
     void MovePieces()
@@ -68,7 +87,6 @@ public class PlayerManager : MonoBehaviour
             movementList.RemoveAt(0);
         }
     }
-
     
     void MoveToNextTurn()
     {
@@ -94,6 +112,9 @@ public class PlayerManager : MonoBehaviour
         string newPlayerName;
         Tile startingYardTile, scoringTile;
 
+        // DEBUG
+        bool isCPU;
+
         // init players array
         Players = new Player[playerYardHolder.childCount];
 
@@ -110,12 +131,18 @@ public class PlayerManager : MonoBehaviour
 
             newPlayerParent.transform.parent = playersHolder;
 
+            // DEBUG ONLY. REMOVE WHEN PLAYER SELECT OPTIONS CREATED
+            if (i == 8)
+                isCPU = false;
+            else
+                isCPU = true;
+
             // setup the player details
             Players[i] = new Player
             {
                 PlayerId = i,
                 PlayerName = newPlayerName,
-                IsPlayerCPU = false,
+                IsPlayerCPU = isCPU,
                 PlayerPieces = new PlayerPiece[playerYardHolder.GetChild(i).childCount]
             };
 

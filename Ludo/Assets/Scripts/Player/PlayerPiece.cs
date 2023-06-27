@@ -60,7 +60,7 @@ public class PlayerPiece : MonoBehaviour
         BuildMovementList();
     }
 
-    void BuildMovementList()
+    public void BuildMovementList()
     {
         Tile[] tilesAhead = new Tile[GameManager.instance.DiceTotal];
 
@@ -121,6 +121,10 @@ public class PlayerPiece : MonoBehaviour
             CurrentTile.PlayerPiece.IsInYard = true;
         }
 
+        // set this PlayerPiece to be on the CurrentTile
+        // this code comes before the scoring check, as if a tile scores, it is removed from the board and from the centre tile
+        CurrentTile.PlayerPiece = this;
+
         // check the current tile to see if it is the scoring tile.
         // if it is, add a movement to the 'scored' area
         if (CurrentTile.IsScoringTile)
@@ -137,10 +141,9 @@ public class PlayerPiece : MonoBehaviour
             movementList.Add(newMovement);
             //TODO: Instead of scoring the piece now, wait until after the animation has finished and then score it.  Perhaps in AdvanceMovementList
             this.IsScored = true;
+            // remove this piece from the centre tile
+            CurrentTile.PlayerPiece = null;
         }
-
-        // finally, set this PlayerPiece to be on the CurrentTile
-        CurrentTile.PlayerPiece = this;
 
         PlayerManager.instance.SetMoveQueue(movementList);
     }
