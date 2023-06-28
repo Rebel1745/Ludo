@@ -91,6 +91,9 @@ public class PlayerManager : MonoBehaviour
         {
             // we still have movements left, remove the one we have just performed
             movementList.RemoveAt(0);
+            // set the infoText to the new info text
+            if(movementList[0].InfoTextToDisplay != null && movementList[0].InfoTextToDisplay != "")
+                GameManager.instance.SetInfoText(movementList[0].InfoTextToDisplay);
         }
     }
     
@@ -103,9 +106,13 @@ public class PlayerManager : MonoBehaviour
             GameManager.instance.UpdateGameState(GameState.NextTurn);
     }
 
-    public void SetMoveQueue(List<PlayerPieceMovement> ppms)
+    public void SetMovementList(List<PlayerPieceMovement> ppms)
     {
         movementList = ppms;
+        // when we set the movementList, set the InfoText to the first movements text
+        if (movementList[0].InfoTextToDisplay != null && movementList[0].InfoTextToDisplay != "")
+            GameManager.instance.SetInfoText(movementList[0].InfoTextToDisplay);
+
         isAnimating = true;
         GameManager.instance.UpdateGameState(GameState.WaitingForAnimation);
     }
@@ -138,7 +145,7 @@ public class PlayerManager : MonoBehaviour
             newPlayerParent.transform.parent = playersHolder;
 
             // DEBUG ONLY. REMOVE WHEN PLAYER SELECT OPTIONS CREATED
-            if (i == 8)
+            if (i == 0)
                 isCPU = false;
             else
                 isCPU = true;
@@ -148,7 +155,7 @@ public class PlayerManager : MonoBehaviour
             {
                 PlayerId = i,
                 PlayerName = newPlayerName,
-                IsPlayerCPU = isCPU,
+                IsPlayerCPU = true,
                 PlayerPieces = new PlayerPiece[playerYardHolder.GetChild(i).childCount]
             };
 
@@ -159,17 +166,23 @@ public class PlayerManager : MonoBehaviour
                 scoringTile = playerScoringTileHolder.GetChild(i).GetChild(j).GetComponent<Tile>();
                 // create a player piece on the yard tile
                 newPlayer = Instantiate(playerPrefab, startingYardTile.transform.position, Quaternion.identity, newPlayerParent.transform);
+                newPlayer.name = "Player " + (i + 1) + " Piece " + (j + 1);
 
                 // TODO: move the below into a function on the PlayerPiece
                 newPlayerPiece = newPlayer.GetComponent<PlayerPiece>();
                 newPlayerPiece.PlayerId = i;
+                newPlayerPiece.PlayerName = newPlayerName;
                 newPlayerPiece.StartingYardTile = startingYardTile;
                 newPlayerPiece.ScoringTile = scoringTile;
                 newPlayerPiece.GetComponentInChildren<Renderer>().material = playerMaterials[i];
                 newPlayerPiece.StartingTile = playerStartingTiles[i];
+                newPlayerPiece.CurrentTile = startingYardTile;
 
                 // add this piece to the player array
                 Players[i].PlayerPieces[j] = newPlayerPiece;
+
+                // set the PlayerPiece on the tile
+                startingYardTile.PlayerPieces.Add(newPlayerPiece);
             }
         }
 
