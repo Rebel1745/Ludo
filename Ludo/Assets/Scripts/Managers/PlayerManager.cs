@@ -11,7 +11,9 @@ public class PlayerManager : MonoBehaviour
     [SerializeField] GameObject playerPrefab;
     [SerializeField] Transform playersHolder;
     [SerializeField] Tile[] playerStartingTiles;
-    [SerializeField] Transform playerScoringTileHolder;
+    [SerializeField] Transform playerScoredTileHolder;
+    [SerializeField] GameObject[] allPlayerDetails;
+    [SerializeField] GameObject playerSelectUI;
 
     public Player[] Players;
 
@@ -40,6 +42,16 @@ public class PlayerManager : MonoBehaviour
             return;
 
         MovePieces();
+    }
+
+    public void ShowPlayerSelectScreen()
+    {
+        playerSelectUI.SetActive(true);
+    }
+
+    public void HidePlayerSelectScreen()
+    {
+        playerSelectUI.SetActive(false);
     }
 
     void SelectCPUPiece()
@@ -122,11 +134,9 @@ public class PlayerManager : MonoBehaviour
         GameObject newPlayerParent;
         GameObject newPlayer;
         PlayerPiece newPlayerPiece;
-        string newPlayerName;
-        Tile startingYardTile, scoringTile;
-
-        // DEBUG
-        bool isCPU;
+        PlayerDetails newPlayerDetails;
+        Tile startingYardTile;
+        Tile scoredTile;
 
         // init players array
         Players = new Player[playerYardHolder.childCount];
@@ -134,28 +144,22 @@ public class PlayerManager : MonoBehaviour
         // loop through the player yards
         for (int i = 0; i < playerYardHolder.childCount; i++)
         {
-            newPlayerName = "Player " + (i + 1);
+            newPlayerDetails = allPlayerDetails[i].GetComponent<PlayerDetails>();
 
             // create an empty game object for this parent, inside the playersHolder
             newPlayerParent = new GameObject
             {
-                name = newPlayerName + " Pieces"
+                name = newPlayerDetails.PlayerName + " Pieces"
             };
 
             newPlayerParent.transform.parent = playersHolder;
-
-            // DEBUG ONLY. REMOVE WHEN PLAYER SELECT OPTIONS CREATED
-            if (i == 0)
-                isCPU = false;
-            else
-                isCPU = true;
 
             // setup the player details
             Players[i] = new Player
             {
                 PlayerId = i,
-                PlayerName = newPlayerName,
-                IsPlayerCPU = true,
+                PlayerName = newPlayerDetails.PlayerName,
+                IsPlayerCPU = newPlayerDetails.isCPU,
                 PlayerPieces = new PlayerPiece[playerYardHolder.GetChild(i).childCount]
             };
 
@@ -163,20 +167,15 @@ public class PlayerManager : MonoBehaviour
             for (int j = 0; j < playerYardHolder.GetChild(i).childCount; j++)
             {
                 startingYardTile = playerYardHolder.GetChild(i).GetChild(j).GetComponent<Tile>();
-                scoringTile = playerScoringTileHolder.GetChild(i).GetChild(j).GetComponent<Tile>();
+                scoredTile = playerScoredTileHolder.GetChild(i).GetChild(j).GetComponent<Tile>();
                 // create a player piece on the yard tile
                 newPlayer = Instantiate(playerPrefab, startingYardTile.transform.position, Quaternion.identity, newPlayerParent.transform);
-                newPlayer.name = "Player " + (i + 1) + " Piece " + (j + 1);
-
-                // TODO: move the below into a function on the PlayerPiece
+                newPlayer.name = newPlayerDetails.PlayerName + " Piece " + (j + 1);
+                
                 newPlayerPiece = newPlayer.GetComponent<PlayerPiece>();
-                newPlayerPiece.PlayerId = i;
-                newPlayerPiece.PlayerName = newPlayerName;
-                newPlayerPiece.StartingYardTile = startingYardTile;
-                newPlayerPiece.ScoringTile = scoringTile;
                 newPlayerPiece.GetComponentInChildren<Renderer>().material = playerMaterials[i];
-                newPlayerPiece.StartingTile = playerStartingTiles[i];
-                newPlayerPiece.CurrentTile = startingYardTile;
+                // setup the piece
+                newPlayerPiece.SetupPlayerPiece(i, newPlayerDetails.PlayerName, startingYardTile, scoredTile, playerStartingTiles[i]);
 
                 // add this piece to the player array
                 Players[i].PlayerPieces[j] = newPlayerPiece;
@@ -184,7 +183,12 @@ public class PlayerManager : MonoBehaviour
                 // set the PlayerPiece on the tile
                 startingYardTile.PlayerPieces.Add(newPlayerPiece);
             }
+
+            // save the player details to PlayerPrefs
+            newPlayerDetails.SavePlayerDetails();
         }
+
+        HidePlayerSelectScreen();
 
         // after the players have been created move the game on
         GameManager.instance.UpdateGameState(GameState.SetupGame);
@@ -198,10 +202,12 @@ public class PlayerManager : MonoBehaviour
         // first loop through all of the pieces for this player
         foreach (PlayerPiece pp in Players[GameManager.instance.CurrentPlayerId].PlayerPieces)
         {
+            // if any piece hs a legal move then the play can continue
             if(PlayerPieceHasLegalMove(pp))
                 return true;
         }
 
+        // if there are no legal moves, return false and the play moves on to the next player
         return false;
     }
 

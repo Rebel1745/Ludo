@@ -31,7 +31,7 @@ public class GameManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        UpdateGameState(GameState.SetupPlayers);
+        UpdateGameState(GameState.SelectPlayerDetails);
     }
 
     public void UpdateGameState(GameState newState)
@@ -42,9 +42,6 @@ public class GameManager : MonoBehaviour
         {
             case GameState.SelectPlayerDetails:
                 SelectPlayerDetails();
-                break;
-            case GameState.SetupPlayers:
-                SetupPlayers();
                 break;
             case GameState.SetupGame:
                 SetupGame();
@@ -69,11 +66,6 @@ public class GameManager : MonoBehaviour
                 RollAgain();
                 break;
         }
-    }
-
-    private void SetupPlayers()
-    {
-        PlayerManager.instance.CreatePlayers();
     }
 
     void SetupGame()
@@ -125,7 +117,7 @@ public class GameManager : MonoBehaviour
 
     private void SelectPlayerDetails()
     {
-        throw new NotImplementedException();
+        PlayerManager.instance.ShowPlayerSelectScreen();
     }
 
     public void SetInfoText(string newText)
@@ -142,7 +134,6 @@ public class GameManager : MonoBehaviour
 public enum GameState
 {
     SelectPlayerDetails,
-    SetupPlayers,
     SetupGame,
     WaitingForRoll,
     CheckForLegalMove,

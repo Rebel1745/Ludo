@@ -42,6 +42,16 @@ public class PlayerPiece : MonoBehaviour
         movementList = new List<PlayerPieceMovement>();
     }
 
+    public void SetupPlayerPiece(int id, string playerName, Tile yardTile, Tile scoredTile, Tile startingTile)
+    {
+        PlayerId = id;
+        PlayerName = playerName;
+        StartingYardTile = yardTile;
+        CurrentTile = yardTile;
+        ScoringTile = scoredTile;
+        StartingTile = startingTile;
+    }
+
     private void OnMouseUp()
     {
         // are we waiting for a click?
