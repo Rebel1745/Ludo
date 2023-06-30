@@ -9,6 +9,8 @@ public class GameManager : MonoBehaviour
     public static GameManager instance;
     [SerializeField] TMP_Text infoText;
     [SerializeField] GameObject gameUI;
+    [SerializeField] GameObject gameOverUI;
+    [SerializeField] GameObject gameOverPlayerDetailsHolder;
 
     public GameState State;
 
@@ -65,6 +67,23 @@ public class GameManager : MonoBehaviour
             case GameState.RollAgain:
                 RollAgain();
                 break;
+            case GameState.GameOver:
+                GameOver();
+                break;
+        }
+    }
+
+    void GameOver()
+    {
+        // show game over screen with positions
+        gameOverUI.SetActive(true);
+        Player currentPlayer;
+
+        // loop through the players and set the game over details according to their finished positions
+        for (int i = 0; i < PlayerManager.instance.Players.Length; i++)
+        {
+            currentPlayer = PlayerManager.instance.Players[i];
+            gameOverPlayerDetailsHolder.transform.GetChild(currentPlayer.FinishedPosition - 1).GetComponent<GameOverDetails>().SetDetails(currentPlayer.PlayerName, currentPlayer.PlayerColour);
         }
     }
 
@@ -101,7 +120,11 @@ public class GameManager : MonoBehaviour
         UpdateCurrentPlayerDetails();
         CurrentPlayerRollAgainCount = 0;
 
-        UpdateGameState(GameState.WaitingForRoll);
+        // if the player has finished the game, move on to the next player
+        if (PlayerManager.instance.Players[CurrentPlayerId].IsFinished)
+            UpdateGameState(GameState.NextTurn);
+        else
+            UpdateGameState(GameState.WaitingForRoll);
     }
 
     private void WaitingForClick()
@@ -140,5 +163,6 @@ public enum GameState
     WaitingForClick,
     WaitingForAnimation,
     NextTurn,
-    RollAgain
+    RollAgain,
+    GameOver
 }

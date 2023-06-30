@@ -9,6 +9,7 @@ public class PlayerDetails : MonoBehaviour
     [SerializeField] TMP_InputField playerNameInputField;
     [SerializeField] TMP_Dropdown cpuDropdown;
     [SerializeField] string defaultPlayerName;
+    public Image ColourImage;
     public string PlayerName;
     public bool isCPU = false;
 

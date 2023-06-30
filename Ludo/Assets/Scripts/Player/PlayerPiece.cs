@@ -262,7 +262,7 @@ public class PlayerPiece : MonoBehaviour
 
             movementList.Add(newMovement);
             //TODO: Instead of scoring the piece now, wait until after the animation has finished and then score it.  Perhaps in AdvanceMovementList
-            this.IsScored = true;
+            //this.IsScored = true;
             // remove this piece from the centre tile
             CurrentTile.PlayerPieces.Remove(this);
         }

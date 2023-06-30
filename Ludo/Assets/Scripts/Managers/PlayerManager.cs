@@ -24,6 +24,9 @@ public class PlayerManager : MonoBehaviour
     Vector3 velocity = Vector3.zero;
     [SerializeField] float smoothTime = 0.25f;
 
+    // finished players
+    int playersFinished = 0;
+
     private void Awake()
     {
         instance = this;
@@ -96,8 +99,15 @@ public class PlayerManager : MonoBehaviour
             // we have finished our list of movements
             // TODO: Check if this was a scoring move, if it was, check if all the players pieces have been scored
             isAnimating = false;
-            movementList.Clear();
-            MoveToNextTurn();
+
+            // if the movement is a scoring one check to see if it wins
+            if (movementList[0].IsScoringMove)
+                CheckScoringMove(movementList[0].PieceToMove);
+            else
+            {
+                movementList.Clear();
+                MoveToNextTurn();
+            }
         }
         else
         {
@@ -106,6 +116,58 @@ public class PlayerManager : MonoBehaviour
             // set the infoText to the new info text
             if(movementList[0].InfoTextToDisplay != null && movementList[0].InfoTextToDisplay != "")
                 GameManager.instance.SetInfoText(movementList[0].InfoTextToDisplay);
+        }
+    }
+
+    void CheckScoringMove(PlayerPiece playerPiece)
+    {
+        playerPiece.IsScored = true;
+
+        bool allPiecesScored = true;
+
+        foreach(PlayerPiece pp in Players[playerPiece.PlayerId].PlayerPieces)
+        {
+            if (!pp.IsScored)
+            {
+                allPiecesScored = false;
+                break;
+            }                
+        }
+
+        if (allPiecesScored)
+        {
+            SetPlayerFinished(playerPiece.PlayerId);
+        }            
+        else{
+            movementList.Clear();
+            MoveToNextTurn();
+        }
+    }
+
+    void SetPlayerFinished(int pId)
+    {
+        playersFinished++;
+
+        Players[pId].IsFinished = true;
+        Players[pId].FinishedPosition = playersFinished;
+
+        if (playersFinished == Players.Length - 1)
+        {
+            // find the player that has not finished, and mark them as finished and last
+            for (int i = 0; i < Players.Length; i++)
+            {
+                if (!Players[i].IsFinished)
+                {
+                    Players[i].IsFinished = true;
+                    Players[i].FinishedPosition = playersFinished + 1;
+                }
+            }
+            GameManager.instance.UpdateGameState(GameState.GameOver);
+        }
+        else
+        {
+            movementList.Clear();
+            MoveToNextTurn();
         }
     }
     
@@ -160,7 +222,8 @@ public class PlayerManager : MonoBehaviour
                 PlayerId = i,
                 PlayerName = newPlayerDetails.PlayerName,
                 IsPlayerCPU = newPlayerDetails.isCPU,
-                PlayerPieces = new PlayerPiece[playerYardHolder.GetChild(i).childCount]
+                PlayerPieces = new PlayerPiece[playerYardHolder.GetChild(i).childCount],
+                PlayerColour = newPlayerDetails.ColourImage.color
             };
 
             // loop through the tiles inside the players yard
@@ -189,6 +252,7 @@ public class PlayerManager : MonoBehaviour
         }
 
         HidePlayerSelectScreen();
+
 
         // after the players have been created move the game on
         GameManager.instance.UpdateGameState(GameState.SetupGame);
