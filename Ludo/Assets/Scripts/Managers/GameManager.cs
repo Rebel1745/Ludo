@@ -61,6 +61,9 @@ public class GameManager : MonoBehaviour
             case GameState.WaitingForClick:
                 WaitingForClick();
                 break;
+            case GameState.WaitingForAnimation:
+                WaitingForAnimation();
+                break;
             case GameState.NextTurn:
                 NextTurn();
                 break;
@@ -115,6 +118,9 @@ public class GameManager : MonoBehaviour
 
     private void NextTurn()
     {
+        // first remove the selectable highlighting from the previous players pieces
+        PlayerManager.instance.RemoveHighlightFromPlayerPieces(CurrentPlayerId);
+
         // advance player
         CurrentPlayerId = (CurrentPlayerId + 1) % totalPlayers;
         UpdateCurrentPlayerDetails();
@@ -124,11 +130,12 @@ public class GameManager : MonoBehaviour
         if (PlayerManager.instance.Players[CurrentPlayerId].IsFinished)
             UpdateGameState(GameState.NextTurn);
         else
-            UpdateGameState(GameState.WaitingForRoll);
+            UpdateGameState(GameState.WaitingForRoll);     
     }
 
     private void WaitingForClick()
     {
+        PlayerManager.instance.HighlightPiecesWithLegalMove(CurrentPlayerId);
         SetInfoText(CurrentPlayerName + " click piece to move");
     }
 
@@ -136,6 +143,12 @@ public class GameManager : MonoBehaviour
     {
         DiceManager.instance.SetDice(0);
         SetInfoText(CurrentPlayerName + " to roll");
+    }
+
+    private void WaitingForAnimation()
+    {
+        // while we wait for the animation, remove the player piece highlighting
+        PlayerManager.instance.RemoveHighlightFromPlayerPieces(CurrentPlayerId);
     }
 
     private void SelectPlayerDetails()

@@ -346,4 +346,21 @@ public class PlayerManager : MonoBehaviour
 
         return false;
     }
+
+    public void HighlightPiecesWithLegalMove(int pId)
+    {
+        foreach(PlayerPiece pp in Players[pId].PlayerPieces)
+        {
+            if (PlayerPieceHasLegalMove(pp))
+                pp.OutlineLegalPiece();
+        }
+    }
+
+    public void RemoveHighlightFromPlayerPieces(int pId)
+    {
+        foreach (PlayerPiece pp in Players[pId].PlayerPieces)
+        {
+            pp.RemoveLegalPieceOutline();
+        }
+    }
 }

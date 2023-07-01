@@ -16,7 +16,6 @@ public class PlayerPiece : MonoBehaviour
     public bool IsScored = false;
     public Tile CurrentTile;
     
-    public bool isCurrentPlayerAnimation = false;
     int spacesToMove;
 
     // movement variables
@@ -37,6 +36,16 @@ public class PlayerPiece : MonoBehaviour
     // new movement variables
     List<PlayerPieceMovement> movementList;
 
+    // Highlighting
+    [Space()]
+    [Header("Highlighting")]
+    [SerializeField] Outline pieceOutline;
+    [SerializeField] Color defaultOutlineColour = Color.black;
+    [SerializeField] float defaultOutlineWidth = 3f;
+    [SerializeField] Color selectableOutlineColour = Color.white;
+    [SerializeField] float mouseOverOutlineWidth = 5f;
+
+
     void Start()
     {
         movementList = new List<PlayerPieceMovement>();
@@ -52,22 +61,56 @@ public class PlayerPiece : MonoBehaviour
         StartingTile = startingTile;
     }
 
-    private void OnMouseUp()
+    public void OutlineLegalPiece()
+    {
+        pieceOutline.OutlineColor = selectableOutlineColour;
+        pieceOutline.OutlineWidth = defaultOutlineWidth;
+    }
+
+    public void RemoveLegalPieceOutline()
+    {
+        pieceOutline.OutlineColor = defaultOutlineColour;
+        pieceOutline.OutlineWidth = defaultOutlineWidth;
+    }
+
+    private void OnMouseOver()
+    {
+        if (CanWeClickIt())
+        {
+            pieceOutline.OutlineColor = selectableOutlineColour;
+            pieceOutline.OutlineWidth = mouseOverOutlineWidth;
+        }
+    }
+
+    private void OnMouseExit()
+    {
+        if (CanWeClickIt())
+            OutlineLegalPiece();
+        else
+            RemoveLegalPieceOutline();
+    }
+
+    bool CanWeClickIt()
     {
         // are we waiting for a click?
         if (GameManager.instance.State != GameState.WaitingForClick)
-            return;
+            return false;
 
         // Check if this piece belongs to us, if not then we can't click on it
         if (PlayerId != GameManager.instance.CurrentPlayerId)
-            return;
+            return false;
 
         if (!PlayerManager.instance.PlayerPieceHasLegalMove(this))
-            return;
+            return false;
 
-        //SelectPiece();
+        // YES WE CAN!
+        return true;
+    }
 
-        BuildMovementList();
+    private void OnMouseUp()
+    {
+        if(CanWeClickIt())
+            BuildMovementList();
     }
 
     public void BuildMovementList()

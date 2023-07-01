@@ -108,6 +108,7 @@ GameObject:
   - component: {fileID: 8903011820676971112}
   - component: {fileID: 5571560125896532255}
   - component: {fileID: 1074550825620591207}
+  - component: {fileID: 2501351128214225614}
   m_Layer: 0
   m_Name: Player
   m_TagString: Untagged
@@ -163,10 +164,11 @@ MonoBehaviour:
   PlayerName: 
   IsCPU: 0
   StartingYardTile: {fileID: 0}
+  ScoringTile: {fileID: 0}
   StartingTile: {fileID: 0}
   IsInYard: 1
   IsScored: 0
-  currentTile: {fileID: 0}
+  CurrentTile: {fileID: 0}
   isCurrentPlayerAnimation: 0
   smoothTime: 0.1
   smoothTimeMultiplier: 5
@@ -177,3 +179,22 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+  pieceOutline: {fileID: 2501351128214225614}
+--- !u!114 &2501351128214225614
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7398688189274225705}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5fea29bb7c508c244a1f805a5fd3fc4d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  outlineMode: 0
+  outlineColor: {r: 0, g: 0, b: 0, a: 1}
+  outlineWidth: 3
+  precomputeOutline: 0
+  bakeKeys: []
+  bakeValues: []
