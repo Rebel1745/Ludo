@@ -13,7 +13,6 @@ public class PlayerManager : MonoBehaviour
     [SerializeField] Tile[] playerStartingTiles;
     [SerializeField] Transform playerScoredTileHolder;
     [SerializeField] GameObject[] allPlayerDetails;
-    [SerializeField] GameObject playerSelectUI;
 
     public Player[] Players;
 
@@ -47,16 +46,7 @@ public class PlayerManager : MonoBehaviour
         MovePieces();
     }
 
-    public void ShowPlayerSelectScreen()
-    {
-        playerSelectUI.SetActive(true);
-    }
-
-    public void HidePlayerSelectScreen()
-    {
-        playerSelectUI.SetActive(false);
-    }
-
+    // This is the AI portion of the code
     void SelectCPUPiece()
     {
         List<PlayerPiece> legalPieces = new List<PlayerPiece>();
@@ -88,6 +78,7 @@ public class PlayerManager : MonoBehaviour
         }
         else
         {
+            // TODO: Update this with the ability to add height to the movement
             movementList[0].PieceToMove.transform.position = Vector3.SmoothDamp(movementList[0].PieceToMove.transform.position, newPosition, ref velocity, smoothTime);
         }        
     }
@@ -251,8 +242,7 @@ public class PlayerManager : MonoBehaviour
             newPlayerDetails.SavePlayerDetails();
         }
 
-        HidePlayerSelectScreen();
-
+        UIManager.instance.HidePlayerSelectScreen();
 
         // after the players have been created move the game on
         GameManager.instance.UpdateGameState(GameState.SetupGame);
@@ -295,7 +285,7 @@ public class PlayerManager : MonoBehaviour
         }
 
         // get the tiles ahead of this piece if it were to move the number on the dice
-        Tile[] tilesAhead = GetTilesAhead(pp, diceTotal);
+        Tile[] tilesAhead = BoardManager.instance.GetTilesAhead(pp, diceTotal);
         for (int i = 0; i < tilesAhead.Length; i++)
         {
             // if tilesAhead[i] is null that means we have overshot the end square, therefore we can't move
@@ -304,47 +294,6 @@ public class PlayerManager : MonoBehaviour
         }
 
         return true;
-    }
-
-    public Tile[] GetTilesAhead(PlayerPiece pp, int spacesAhead)
-    {
-        Tile[] tilesAhead = new Tile[spacesAhead];
-        Tile currentTile = pp.CurrentTile;
-        Tile destTile;
-
-        for (int i = 0; i < GameManager.instance.DiceTotal; i++)
-        {
-            // if there is no next tile then we have reached the end
-            // break out of the loops and return null values for tiles that aren't there
-            if (currentTile.NextTile == null)
-                break;
-
-            if (currentTile.IsBranchTile && currentTile.PlayerIdForBranch == GameManager.instance.CurrentPlayerId)
-                destTile = currentTile.TileToBranchTo;
-            else
-                destTile = currentTile.NextTile;
-
-            tilesAhead[i] = destTile;
-            currentTile = destTile;
-        }
-
-        return tilesAhead;
-    }
-
-    public bool TileContainsOpponentsPiece(Tile tile)
-    {
-        // if there are no pieces on this tile, all good
-        if (tile.PlayerPieces.Count == 0)
-            return false;
-
-        // check  each of the pieces on this tile, if one has a different Id to the current player, we have landed on an enemy
-        foreach(PlayerPiece pp in tile.PlayerPieces)
-        {
-            if (pp.PlayerId != GameManager.instance.CurrentPlayerId)
-                return true;
-        }
-
-        return false;
     }
 
     public void HighlightPiecesWithLegalMove(int pId)

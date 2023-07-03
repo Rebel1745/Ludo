@@ -13,4 +13,7 @@ public class Tile : MonoBehaviour
     public Transform[] DoublePiecePositions; // if there are two of the same players pieces on this square, put them on these positions
     public Transform[] TriplePiecePositions; // if there are three of the same players pieces on this square, put them on these positions
     public Transform[] QuadrouplePiecePositions; // if there are four of the same players pieces on this square, put them on these positions
+    public Transform RotationPoint;
+    public GameObject CentreBall;
+    public GameObject MovementIndicator;
 }

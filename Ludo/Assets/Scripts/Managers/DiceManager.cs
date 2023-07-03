@@ -87,8 +87,8 @@ public class DiceManager : MonoBehaviour
     {
         // random number between 1 and 6 for the dice roll
         int rolledNum = Random.Range(1, 7);
-        /*if (GameManager.instance.CurrentPlayerId == 0 || GameManager.instance.CurrentPlayerId == 1)
-            rolledNum = 6;*/
+        if (GameManager.instance.CurrentPlayerId == 0 || GameManager.instance.CurrentPlayerId == 1)
+            rolledNum = 6;
         GameManager.instance.DiceTotal = rolledNum;
         SetDice(rolledNum);
 

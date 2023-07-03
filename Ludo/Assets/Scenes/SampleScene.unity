@@ -385,6 +385,9 @@ MonoBehaviour:
   DoublePiecePositions: []
   TriplePiecePositions: []
   QuadrouplePiecePositions: []
+  RotationPoint: {fileID: 0}
+  CentreBall: {fileID: 0}
+  MovementIndicator: {fileID: 0}
 --- !u!1 &75628324
 GameObject:
   m_ObjectHideFlags: 0
@@ -1742,7 +1745,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 375911428}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: 0.402, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1780,7 +1783,6 @@ MonoBehaviour:
   - {fileID: 2490327375814974498}
   - {fileID: 2490327376237633281}
   - {fileID: 2490327375672437108}
-  playerSelectUI: {fileID: 2490327374944801159}
   smoothTime: 0.05
 --- !u!1001 &376298240
 PrefabInstance:
@@ -2574,6 +2576,9 @@ MonoBehaviour:
   DoublePiecePositions: []
   TriplePiecePositions: []
   QuadrouplePiecePositions: []
+  RotationPoint: {fileID: 0}
+  CentreBall: {fileID: 0}
+  MovementIndicator: {fileID: 0}
 --- !u!1001 &507437175
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -2984,6 +2989,9 @@ MonoBehaviour:
   DoublePiecePositions: []
   TriplePiecePositions: []
   QuadrouplePiecePositions: []
+  RotationPoint: {fileID: 0}
+  CentreBall: {fileID: 0}
+  MovementIndicator: {fileID: 0}
 --- !u!1001 &536554567
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -3998,6 +4006,9 @@ MonoBehaviour:
   DoublePiecePositions: []
   TriplePiecePositions: []
   QuadrouplePiecePositions: []
+  RotationPoint: {fileID: 0}
+  CentreBall: {fileID: 0}
+  MovementIndicator: {fileID: 0}
 --- !u!1 &783741076
 GameObject:
   m_ObjectHideFlags: 0
@@ -4267,6 +4278,9 @@ MonoBehaviour:
   DoublePiecePositions: []
   TriplePiecePositions: []
   QuadrouplePiecePositions: []
+  RotationPoint: {fileID: 0}
+  CentreBall: {fileID: 0}
+  MovementIndicator: {fileID: 0}
 --- !u!1 &844275092
 GameObject:
   m_ObjectHideFlags: 0
@@ -4586,8 +4600,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   infoText: {fileID: 636990785506929064}
-  gameUI: {fileID: 636990785539632082}
-  gameOverUI: {fileID: 1812725414}
   gameOverPlayerDetailsHolder: {fileID: 1389558493}
   State: 0
   DiceTotal: 0
@@ -4915,6 +4927,9 @@ MonoBehaviour:
   DoublePiecePositions: []
   TriplePiecePositions: []
   QuadrouplePiecePositions: []
+  RotationPoint: {fileID: 0}
+  CentreBall: {fileID: 0}
+  MovementIndicator: {fileID: 0}
 --- !u!1 &1030581961
 GameObject:
   m_ObjectHideFlags: 0
@@ -6449,6 +6464,9 @@ MonoBehaviour:
   DoublePiecePositions: []
   TriplePiecePositions: []
   QuadrouplePiecePositions: []
+  RotationPoint: {fileID: 0}
+  CentreBall: {fileID: 0}
+  MovementIndicator: {fileID: 0}
 --- !u!1 &1267915632
 GameObject:
   m_ObjectHideFlags: 0
@@ -6556,6 +6574,9 @@ MonoBehaviour:
   DoublePiecePositions: []
   TriplePiecePositions: []
   QuadrouplePiecePositions: []
+  RotationPoint: {fileID: 0}
+  CentreBall: {fileID: 0}
+  MovementIndicator: {fileID: 0}
 --- !u!1 &1274499785
 GameObject:
   m_ObjectHideFlags: 0
@@ -6786,6 +6807,53 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 5588244962338219853, guid: ed466e48518ecf24cbd0807986655918, type: 3}
   m_PrefabInstance: {fileID: 1310889552}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &1317056815
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1317056816}
+  - component: {fileID: 1317056817}
+  m_Layer: 0
+  m_Name: UIManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1317056816
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1317056815}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1669500333}
+  m_RootOrder: 4
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1317056817
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1317056815}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 01a999c0ad2047e4e8df1c4f13e2490c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  playerSelectUI: {fileID: 2490327374944801159}
+  gameUI: {fileID: 636990785539632082}
+  gameOverUI: {fileID: 1812725414}
 --- !u!1001 &1325312309
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -7114,6 +7182,9 @@ MonoBehaviour:
   DoublePiecePositions: []
   TriplePiecePositions: []
   QuadrouplePiecePositions: []
+  RotationPoint: {fileID: 0}
+  CentreBall: {fileID: 0}
+  MovementIndicator: {fileID: 0}
 --- !u!1 &1394388791
 GameObject:
   m_ObjectHideFlags: 0
@@ -7413,6 +7484,9 @@ MonoBehaviour:
   DoublePiecePositions: []
   TriplePiecePositions: []
   QuadrouplePiecePositions: []
+  RotationPoint: {fileID: 0}
+  CentreBall: {fileID: 0}
+  MovementIndicator: {fileID: 0}
 --- !u!1 &1463038290
 GameObject:
   m_ObjectHideFlags: 0
@@ -7534,6 +7608,9 @@ MonoBehaviour:
   DoublePiecePositions: []
   TriplePiecePositions: []
   QuadrouplePiecePositions: []
+  RotationPoint: {fileID: 0}
+  CentreBall: {fileID: 0}
+  MovementIndicator: {fileID: 0}
 --- !u!1001 &1490009237
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -8183,6 +8260,9 @@ MonoBehaviour:
   DoublePiecePositions: []
   TriplePiecePositions: []
   QuadrouplePiecePositions: []
+  RotationPoint: {fileID: 0}
+  CentreBall: {fileID: 0}
+  MovementIndicator: {fileID: 0}
 --- !u!1001 &1581784029
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -8317,6 +8397,9 @@ MonoBehaviour:
   DoublePiecePositions: []
   TriplePiecePositions: []
   QuadrouplePiecePositions: []
+  RotationPoint: {fileID: 0}
+  CentreBall: {fileID: 0}
+  MovementIndicator: {fileID: 0}
 --- !u!1 &1664538638
 GameObject:
   m_ObjectHideFlags: 0
@@ -8384,6 +8467,7 @@ Transform:
   - {fileID: 1128344770}
   - {fileID: 375911429}
   - {fileID: 783741077}
+  - {fileID: 1317056816}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -9072,6 +9156,9 @@ MonoBehaviour:
   DoublePiecePositions: []
   TriplePiecePositions: []
   QuadrouplePiecePositions: []
+  RotationPoint: {fileID: 0}
+  CentreBall: {fileID: 0}
+  MovementIndicator: {fileID: 0}
 --- !u!1 &1863181172
 GameObject:
   m_ObjectHideFlags: 0
@@ -9403,6 +9490,9 @@ MonoBehaviour:
   DoublePiecePositions: []
   TriplePiecePositions: []
   QuadrouplePiecePositions: []
+  RotationPoint: {fileID: 0}
+  CentreBall: {fileID: 0}
+  MovementIndicator: {fileID: 0}
 --- !u!1 &1950462559
 GameObject:
   m_ObjectHideFlags: 0
@@ -9456,6 +9546,9 @@ MonoBehaviour:
   DoublePiecePositions: []
   TriplePiecePositions: []
   QuadrouplePiecePositions: []
+  RotationPoint: {fileID: 0}
+  CentreBall: {fileID: 0}
+  MovementIndicator: {fileID: 0}
 --- !u!1 &1956423243
 GameObject:
   m_ObjectHideFlags: 0

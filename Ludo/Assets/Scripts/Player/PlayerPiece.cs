@@ -73,12 +73,57 @@ public class PlayerPiece : MonoBehaviour
         pieceOutline.OutlineWidth = defaultOutlineWidth;
     }
 
+    void ShowPossiblePieceMovement()
+    {
+        Tile[] tilesAhead = BoardManager.instance.GetTilesAhead(this, GameManager.instance.DiceTotal);
+
+        // first, show the stuff from the current tile
+        CurrentTile.MovementIndicator.SetActive(true);
+        CurrentTile.RotationPoint.LookAt(tilesAhead[0].RotationPoint);
+
+        for (int i = 0; i < tilesAhead.Length; i++)
+        {
+            tilesAhead[i].CentreBall.SetActive(true);
+
+            // se only want to indicate to the next tile if there is one
+            if (i < tilesAhead.Length - 1)
+            {
+                tilesAhead[i].MovementIndicator.SetActive(true);
+                tilesAhead[i].RotationPoint.LookAt(tilesAhead[i + 1].RotationPoint);
+            }            
+        }
+    }
+
+    void RemovePossiblePieceMovement()
+    {
+        Tile[] tilesAhead = BoardManager.instance.GetTilesAhead(this, GameManager.instance.DiceTotal);
+
+        CurrentTile.MovementIndicator.SetActive(false);
+
+        for (int i = 0; i < tilesAhead.Length; i++)
+        {
+            if(tilesAhead[i] != null)
+            {
+                tilesAhead[i].CentreBall.SetActive(false);
+                tilesAhead[i].MovementIndicator.SetActive(false);
+            }
+            else
+            {
+                Debug.LogError("Seems tilesAhead[" + i + "] is null, what could have caused that?");
+            }
+        }
+    }
+
     private void OnMouseOver()
     {
         if (CanWeClickIt())
         {
             pieceOutline.OutlineColor = selectableOutlineColour;
             pieceOutline.OutlineWidth = mouseOverOutlineWidth;
+
+            // we only want to see a possible move, if we are on the board
+            if(!this.IsInYard)
+                ShowPossiblePieceMovement();
         }
     }
 
@@ -88,6 +133,9 @@ public class PlayerPiece : MonoBehaviour
             OutlineLegalPiece();
         else
             RemoveLegalPieceOutline();
+
+        if(!this.IsInYard)
+            RemovePossiblePieceMovement();
     }
 
     bool CanWeClickIt()
@@ -109,14 +157,17 @@ public class PlayerPiece : MonoBehaviour
 
     private void OnMouseUp()
     {
-        if(CanWeClickIt())
+        if (CanWeClickIt())
+        {
+            if(!this.IsInYard)
+                RemovePossiblePieceMovement();
             BuildMovementList();
+        }            
     }
 
     public void BuildMovementList()
     {
         Tile[] tilesAhead = new Tile[GameManager.instance.DiceTotal];
-        List<PlayerPiece> removePiecesFromList;
 
         movementList.Clear();
 
@@ -141,7 +192,7 @@ public class PlayerPiece : MonoBehaviour
         }
         else
         {
-            tilesAhead = PlayerManager.instance.GetTilesAhead(this, GameManager.instance.DiceTotal);
+            tilesAhead = BoardManager.instance.GetTilesAhead(this, GameManager.instance.DiceTotal);
 
             for (int i = 0; i < tilesAhead.Length; i++)
             {
@@ -159,9 +210,43 @@ public class PlayerPiece : MonoBehaviour
 
         // now check to see if we will land on anyone and if we do add them to the movement list with their destination as their yard
         // if there is a piece on the final tile, and that piece does not belong to the player currently moving
-        if(PlayerManager.instance.TileContainsOpponentsPiece(CurrentTile))
+        if(BoardManager.instance.TileContainsOpponentsPiece(CurrentTile))
         {
-            removePiecesFromList = new List<PlayerPiece>();
+            // we have landed on piece with at least one opponent on it, if it is only one, remove it. if not, remove us!
+            if(CurrentTile.PlayerPieces.Count == 1)
+            {
+                PlayerPiece pieceToSendHome = CurrentTile.PlayerPieces[0];
+                // there is only one piece on this tile, send it home
+                newMovement = new PlayerPieceMovement
+                {
+                    PieceToMove = pieceToSendHome,
+                    DestinationTile = pieceToSendHome.StartingYardTile,
+                    InfoTextToDisplay = GameManager.instance.CurrentPlayerName + " landed on " + pieceToSendHome.PlayerName + ". Sending them back home"
+                };
+
+                movementList.Add(newMovement);
+                pieceToSendHome.CurrentTile = pieceToSendHome.StartingYardTile;
+                pieceToSendHome.IsInYard = true;
+                CurrentTile.PlayerPieces.Remove(pieceToSendHome);
+            }
+            else
+            {
+                // there are more than on opponent pieces on this tile, send us home
+                newMovement = new PlayerPieceMovement
+                {
+                    PieceToMove = this,
+                    DestinationTile = this.StartingYardTile,
+                    InfoTextToDisplay = GameManager.instance.CurrentPlayerName + " landed on " + this.PlayerName + ". Sending them back home"
+                };
+
+                movementList.Add(newMovement);
+                this.CurrentTile = this.StartingYardTile;
+                this.IsInYard = true;
+                CurrentTile.PlayerPieces.Remove(this);
+            }
+
+            #region Use this code if a future option to remove multiple landed on pieces is active
+            /*List<PlayerPiece> removePiecesFromList = new List<PlayerPiece>();
             // Add a new movement for each of the pieces on this tile
             // TODO: if there is more than one opponents piece on the tile, should we send this player home instead of the opponent?
             foreach(PlayerPiece pp in CurrentTile.PlayerPieces)
@@ -176,7 +261,7 @@ public class PlayerPiece : MonoBehaviour
                 movementList.Add(newMovement);
 
                 // set the player going home as having CurrentTile of their yard tile
-                pp.CurrentTile = StartingYardTile;
+                pp.CurrentTile = pp.StartingYardTile;
                 pp.IsInYard = true;
 
                 // add this piece to a list which will be removed after all pieces have been checked
@@ -188,7 +273,8 @@ public class PlayerPiece : MonoBehaviour
             {
                 // remove the landed on piece from the tile
                 CurrentTile.PlayerPieces.Remove(pp);
-            }
+            }*/
+            #endregion
         }
         else
         {
@@ -200,8 +286,7 @@ public class PlayerPiece : MonoBehaviour
                 newMovement = new PlayerPieceMovement
                 {
                     PieceToMove = CurrentTile.PlayerPieces[0],
-                    DestinationPosition = CurrentTile.DoublePiecePositions[0].position,
-                    InfoTextToDisplay = "Moving " + CurrentTile.PlayerPieces[0].gameObject.name + " to DoublePiecePositions[0]"
+                    DestinationPosition = CurrentTile.DoublePiecePositions[0].position
                 };
 
                 movementList.Add(newMovement);
@@ -209,8 +294,7 @@ public class PlayerPiece : MonoBehaviour
                 newMovement = new PlayerPieceMovement
                 {
                     PieceToMove = this,
-                    DestinationPosition = CurrentTile.DoublePiecePositions[1].position,
-                    InfoTextToDisplay = "Moving " + this.gameObject.name + " to DoublePiecePositions[1]"
+                    DestinationPosition = CurrentTile.DoublePiecePositions[1].position
                 };
 
                 movementList.Add(newMovement);
@@ -221,8 +305,7 @@ public class PlayerPiece : MonoBehaviour
                 newMovement = new PlayerPieceMovement
                 {
                     PieceToMove = CurrentTile.PlayerPieces[0],
-                    DestinationPosition = CurrentTile.TriplePiecePositions[0].position,
-                    InfoTextToDisplay = "Moving " + CurrentTile.PlayerPieces[0].gameObject.name + " to TriplePiecePositions[0]"
+                    DestinationPosition = CurrentTile.TriplePiecePositions[0].position
                 };
 
                 movementList.Add(newMovement);
@@ -230,8 +313,7 @@ public class PlayerPiece : MonoBehaviour
                 newMovement = new PlayerPieceMovement
                 {
                     PieceToMove = CurrentTile.PlayerPieces[1],
-                    DestinationPosition = CurrentTile.TriplePiecePositions[1].position,
-                    InfoTextToDisplay = "Moving " + CurrentTile.PlayerPieces[1].gameObject.name + " to TriplePiecePositions[1]"
+                    DestinationPosition = CurrentTile.TriplePiecePositions[1].position
                 };
 
                 movementList.Add(newMovement);
@@ -239,8 +321,7 @@ public class PlayerPiece : MonoBehaviour
                 newMovement = new PlayerPieceMovement
                 {
                     PieceToMove = this,
-                    DestinationPosition = CurrentTile.TriplePiecePositions[2].position,
-                    InfoTextToDisplay = "Moving " + this.gameObject.name + " to TriplePiecePositions[2]"
+                    DestinationPosition = CurrentTile.TriplePiecePositions[2].position
                 };
 
                 movementList.Add(newMovement);
@@ -251,8 +332,7 @@ public class PlayerPiece : MonoBehaviour
                 newMovement = new PlayerPieceMovement
                 {
                     PieceToMove = CurrentTile.PlayerPieces[0],
-                    DestinationPosition = CurrentTile.QuadrouplePiecePositions[0].position,
-                    InfoTextToDisplay = "Moving " + CurrentTile.PlayerPieces[0].gameObject.name + " to QuadrouplePiecePositions[0]"
+                    DestinationPosition = CurrentTile.QuadrouplePiecePositions[0].position
                 };
 
                 movementList.Add(newMovement);
@@ -260,8 +340,7 @@ public class PlayerPiece : MonoBehaviour
                 newMovement = new PlayerPieceMovement
                 {
                     PieceToMove = CurrentTile.PlayerPieces[1],
-                    DestinationPosition = CurrentTile.QuadrouplePiecePositions[1].position,
-                    InfoTextToDisplay = "Moving " + CurrentTile.PlayerPieces[1].gameObject.name + " to QuadrouplePiecePositions[1]"
+                    DestinationPosition = CurrentTile.QuadrouplePiecePositions[1].position
                 };
 
                 movementList.Add(newMovement);
@@ -269,8 +348,7 @@ public class PlayerPiece : MonoBehaviour
                 newMovement = new PlayerPieceMovement
                 {
                     PieceToMove = CurrentTile.PlayerPieces[2],
-                    DestinationPosition = CurrentTile.QuadrouplePiecePositions[2].position,
-                    InfoTextToDisplay = "Moving " + CurrentTile.PlayerPieces[2].gameObject.name + " to QuadrouplePiecePositions[2]"
+                    DestinationPosition = CurrentTile.QuadrouplePiecePositions[2].position
                 };
 
                 movementList.Add(newMovement);
@@ -278,8 +356,7 @@ public class PlayerPiece : MonoBehaviour
                 newMovement = new PlayerPieceMovement
                 {
                     PieceToMove = this,
-                    DestinationPosition = CurrentTile.QuadrouplePiecePositions[3].position,
-                    InfoTextToDisplay = "Moving " + this.gameObject.name + " to QuadrouplePiecePositions[3]"
+                    DestinationPosition = CurrentTile.QuadrouplePiecePositions[3].position
                 };
 
                 movementList.Add(newMovement);
@@ -304,8 +381,7 @@ public class PlayerPiece : MonoBehaviour
             };
 
             movementList.Add(newMovement);
-            //TODO: Instead of scoring the piece now, wait until after the animation has finished and then score it.  Perhaps in AdvanceMovementList
-            //this.IsScored = true;
+
             // remove this piece from the centre tile
             CurrentTile.PlayerPieces.Remove(this);
         }

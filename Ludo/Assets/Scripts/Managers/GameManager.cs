@@ -8,8 +8,6 @@ public class GameManager : MonoBehaviour
 {
     public static GameManager instance;
     [SerializeField] TMP_Text infoText;
-    [SerializeField] GameObject gameUI;
-    [SerializeField] GameObject gameOverUI;
     [SerializeField] GameObject gameOverPlayerDetailsHolder;
 
     public GameState State;
@@ -79,7 +77,7 @@ public class GameManager : MonoBehaviour
     void GameOver()
     {
         // show game over screen with positions
-        gameOverUI.SetActive(true);
+        UIManager.instance.ShowGameOverUI();
         Player currentPlayer;
 
         // loop through the players and set the game over details according to their finished positions
@@ -97,7 +95,7 @@ public class GameManager : MonoBehaviour
         CurrentPlayerId = 0;
         UpdateCurrentPlayerDetails();
         // Activate the GameUI
-        gameUI.SetActive(true);
+        UIManager.instance.ShowGameUI();
         // Start the game by changing the state to WaitingForRoll
         UpdateGameState(GameState.WaitingForRoll);
     }
@@ -113,7 +111,7 @@ public class GameManager : MonoBehaviour
         if (CurrentPlayerRollAgainCount <= MaximumRollAgain)
             UpdateGameState(GameState.WaitingForRoll);
         else
-            print("If I see this message, something went wrong");
+            Debug.LogError("Something went awry in the roll again MaximumRollAgain check");
     }
 
     private void NextTurn()
@@ -153,7 +151,7 @@ public class GameManager : MonoBehaviour
 
     private void SelectPlayerDetails()
     {
-        PlayerManager.instance.ShowPlayerSelectScreen();
+        UIManager.instance.ShowPlayerSelectScreen();
     }
 
     public void SetInfoText(string newText)
