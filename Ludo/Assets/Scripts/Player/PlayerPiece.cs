@@ -17,6 +17,7 @@ public class PlayerPiece : MonoBehaviour
     public Tile CurrentTile;
     
     int spacesToMove;
+    public int TotalDistanceTravelled = 0;
 
     // movement variables
     Tile[] moveQueue;
@@ -167,13 +168,14 @@ public class PlayerPiece : MonoBehaviour
 
     public void BuildMovementList()
     {
+        Tile initialTile = CurrentTile;
         Tile[] tilesAhead = new Tile[GameManager.instance.DiceTotal];
 
         movementList.Clear();
 
         // if we are on a tile then remove this piece from it
-        //if (CurrentTile != null)
-            CurrentTile.PlayerPieces.Remove(this);
+        initialTile.PlayerPieces.Remove(this);
+        RearrangeMultiplePieces(initialTile);
 
         PlayerPieceMovement newMovement;
 
@@ -189,6 +191,7 @@ public class PlayerPiece : MonoBehaviour
             movementList.Add(newMovement);
             CurrentTile = StartingTile;
             IsInYard = false;
+            TotalDistanceTravelled++;
         }
         else
         {
@@ -206,6 +209,7 @@ public class PlayerPiece : MonoBehaviour
                 movementList.Add(newMovement);
                 CurrentTile = tilesAhead[i];
             }
+            TotalDistanceTravelled += tilesAhead.Length;
         }
 
         // now check to see if we will land on anyone and if we do add them to the movement list with their destination as their yard
@@ -215,34 +219,14 @@ public class PlayerPiece : MonoBehaviour
             // we have landed on piece with at least one opponent on it, if it is only one, remove it. if not, remove us!
             if(CurrentTile.PlayerPieces.Count == 1)
             {
-                PlayerPiece pieceToSendHome = CurrentTile.PlayerPieces[0];
                 // there is only one piece on this tile, send it home
-                newMovement = new PlayerPieceMovement
-                {
-                    PieceToMove = pieceToSendHome,
-                    DestinationTile = pieceToSendHome.StartingYardTile,
-                    InfoTextToDisplay = GameManager.instance.CurrentPlayerName + " landed on " + pieceToSendHome.PlayerName + ". Sending them back home"
-                };
-
-                movementList.Add(newMovement);
-                pieceToSendHome.CurrentTile = pieceToSendHome.StartingYardTile;
-                pieceToSendHome.IsInYard = true;
-                CurrentTile.PlayerPieces.Remove(pieceToSendHome);
+                PlayerPiece pieceToSendHome = CurrentTile.PlayerPieces[0];
+                SendPieceHome(pieceToSendHome, GameManager.instance.CurrentPlayerName + " landed on " + pieceToSendHome.PlayerName + ". Sending them back home", false);
             }
             else
             {
                 // there are more than on opponent pieces on this tile, send us home
-                newMovement = new PlayerPieceMovement
-                {
-                    PieceToMove = this,
-                    DestinationTile = this.StartingYardTile,
-                    InfoTextToDisplay = GameManager.instance.CurrentPlayerName + " landed on " + this.PlayerName + ". Sending them back home"
-                };
-
-                movementList.Add(newMovement);
-                this.CurrentTile = this.StartingYardTile;
-                this.IsInYard = true;
-                CurrentTile.PlayerPieces.Remove(this);
+                SendPieceHome(this, GameManager.instance.CurrentPlayerName + " landed on " + this.PlayerName + ". Sending them back home", false);
             }
 
             #region Use this code if a future option to remove multiple landed on pieces is active
@@ -276,96 +260,10 @@ public class PlayerPiece : MonoBehaviour
             }*/
             #endregion
         }
-        else
-        {
-            #region Multiple Pieces on one Tile
-            // the current tile doesn't contain any opponent pieces, does it include any of our own?
-            if (CurrentTile.PlayerPieces.Count == 1)
-            {
-                // there is one of our pieces on this tile, move it to the first DoublePiecePositions location, and this tile to the other
-                newMovement = new PlayerPieceMovement
-                {
-                    PieceToMove = CurrentTile.PlayerPieces[0],
-                    DestinationPosition = CurrentTile.DoublePiecePositions[0].position
-                };
-
-                movementList.Add(newMovement);
-
-                newMovement = new PlayerPieceMovement
-                {
-                    PieceToMove = this,
-                    DestinationPosition = CurrentTile.DoublePiecePositions[1].position
-                };
-
-                movementList.Add(newMovement);
-            }
-            else if(CurrentTile.PlayerPieces.Count == 2)
-            {
-                // there are two of our pieces on this tile, move them to the TriplePiecePositions locations
-                newMovement = new PlayerPieceMovement
-                {
-                    PieceToMove = CurrentTile.PlayerPieces[0],
-                    DestinationPosition = CurrentTile.TriplePiecePositions[0].position
-                };
-
-                movementList.Add(newMovement);
-
-                newMovement = new PlayerPieceMovement
-                {
-                    PieceToMove = CurrentTile.PlayerPieces[1],
-                    DestinationPosition = CurrentTile.TriplePiecePositions[1].position
-                };
-
-                movementList.Add(newMovement);
-
-                newMovement = new PlayerPieceMovement
-                {
-                    PieceToMove = this,
-                    DestinationPosition = CurrentTile.TriplePiecePositions[2].position
-                };
-
-                movementList.Add(newMovement);
-            }
-            else if (CurrentTile.PlayerPieces.Count == 3)
-            {
-                // there are three of our pieces on this tile, move them to the QuadrouplePiecePositions locations
-                newMovement = new PlayerPieceMovement
-                {
-                    PieceToMove = CurrentTile.PlayerPieces[0],
-                    DestinationPosition = CurrentTile.QuadrouplePiecePositions[0].position
-                };
-
-                movementList.Add(newMovement);
-
-                newMovement = new PlayerPieceMovement
-                {
-                    PieceToMove = CurrentTile.PlayerPieces[1],
-                    DestinationPosition = CurrentTile.QuadrouplePiecePositions[1].position
-                };
-
-                movementList.Add(newMovement);
-
-                newMovement = new PlayerPieceMovement
-                {
-                    PieceToMove = CurrentTile.PlayerPieces[2],
-                    DestinationPosition = CurrentTile.QuadrouplePiecePositions[2].position
-                };
-
-                movementList.Add(newMovement);
-
-                newMovement = new PlayerPieceMovement
-                {
-                    PieceToMove = this,
-                    DestinationPosition = CurrentTile.QuadrouplePiecePositions[3].position
-                };
-
-                movementList.Add(newMovement);
-            }
-            #endregion
-        }
 
         // set this PlayerPiece to be on the CurrentTile
         CurrentTile.PlayerPieces.Add(this);
+        RearrangeMultiplePieces(CurrentTile);
 
         // check the current tile to see if it is the scoring tile.
         // if it is, add a movement to the 'scored' area
@@ -386,6 +284,138 @@ public class PlayerPiece : MonoBehaviour
             CurrentTile.PlayerPieces.Remove(this);
         }
 
+        //RearrangeMultiplePieces(initialTile);
+
         PlayerManager.instance.SetMovementList(movementList);
+    }
+
+    void RearrangeMultiplePieces(Tile tile)
+    {
+        PlayerPieceMovement newMovement;
+
+        #region Multiple Pieces on one Tile
+
+        // if there is only one piece, move it to the middle of the tile
+        if (tile.PlayerPieces.Count == 1)
+        {
+            newMovement = new PlayerPieceMovement
+            {
+                PieceToMove = tile.PlayerPieces[0],
+                DestinationPosition = tile.transform.position,
+                IsInstantMovement = true
+            };
+
+            movementList.Add(newMovement);
+        }
+        else if (tile.PlayerPieces.Count == 2)
+        {
+            // there is one of our pieces on this tile, move it to the first DoublePiecePositions location, and this tile to the other
+            newMovement = new PlayerPieceMovement
+            {
+                PieceToMove = tile.PlayerPieces[0],
+                DestinationPosition = tile.DoublePiecePositions[0].position,
+                IsInstantMovement = true
+            };
+
+            movementList.Add(newMovement);
+
+            newMovement = new PlayerPieceMovement
+            {
+                PieceToMove = tile.PlayerPieces[1],
+                DestinationPosition = tile.DoublePiecePositions[1].position,
+                IsInstantMovement = true
+            };
+
+            movementList.Add(newMovement);
+        }
+        else if (tile.PlayerPieces.Count == 3)
+        {
+            // there are two of our pieces on this tile, move them to the TriplePiecePositions locations
+            newMovement = new PlayerPieceMovement
+            {
+                PieceToMove = tile.PlayerPieces[0],
+                DestinationPosition = tile.TriplePiecePositions[0].position,
+                IsInstantMovement = true
+            };
+
+            movementList.Add(newMovement);
+
+            newMovement = new PlayerPieceMovement
+            {
+                PieceToMove = tile.PlayerPieces[1],
+                DestinationPosition = tile.TriplePiecePositions[1].position,
+                IsInstantMovement = true
+            };
+
+            movementList.Add(newMovement);
+
+            newMovement = new PlayerPieceMovement
+            {
+                PieceToMove = tile.PlayerPieces[2],
+                DestinationPosition = tile.TriplePiecePositions[2].position,
+                IsInstantMovement = true
+            };
+
+            movementList.Add(newMovement);
+        }
+        else if (tile.PlayerPieces.Count == 4)
+        {
+            // there are three of our pieces on this tile, move them to the QuadrouplePiecePositions locations
+            newMovement = new PlayerPieceMovement
+            {
+                PieceToMove = tile.PlayerPieces[0],
+                DestinationPosition = tile.QuadrouplePiecePositions[0].position,
+                IsInstantMovement = true
+            };
+
+            movementList.Add(newMovement);
+
+            newMovement = new PlayerPieceMovement
+            {
+                PieceToMove = tile.PlayerPieces[1],
+                DestinationPosition = tile.QuadrouplePiecePositions[1].position,
+                IsInstantMovement = true
+            };
+
+            movementList.Add(newMovement);
+
+            newMovement = new PlayerPieceMovement
+            {
+                PieceToMove = tile.PlayerPieces[2],
+                DestinationPosition = tile.QuadrouplePiecePositions[2].position,
+                IsInstantMovement = true
+            };
+
+            movementList.Add(newMovement);
+
+            newMovement = new PlayerPieceMovement
+            {
+                PieceToMove = tile.PlayerPieces[3],
+                DestinationPosition = tile.QuadrouplePiecePositions[3].position,
+                IsInstantMovement = true
+            };
+
+            movementList.Add(newMovement);
+        }
+        #endregion
+    }
+
+    public void SendPieceHome(PlayerPiece pp, string reason, bool onlyMovement)
+    {
+        PlayerPieceMovement newMovement = new PlayerPieceMovement
+        {
+            PieceToMove = pp,
+            DestinationTile = pp.StartingYardTile,
+            InfoTextToDisplay = reason
+        };
+
+        movementList.Add(newMovement);
+        pp.CurrentTile.PlayerPieces.Remove(pp);
+        pp.CurrentTile = pp.StartingYardTile;
+        pp.IsInYard = true;
+        pp.TotalDistanceTravelled = 0;
+
+        if(onlyMovement)
+            PlayerManager.instance.SetMovementList(movementList);
     }
 }

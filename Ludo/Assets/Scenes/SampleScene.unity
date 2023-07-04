@@ -4607,7 +4607,7 @@ MonoBehaviour:
   CurrentPlayerName: 
   IsCurrentPlayerCPU: 0
   CurrentPlayerRollAgainCount: 0
-  MaximumRollAgain: 3
+  MaximumRollAgain: 100
 --- !u!1001 &911415601
 PrefabInstance:
   m_ObjectHideFlags: 0

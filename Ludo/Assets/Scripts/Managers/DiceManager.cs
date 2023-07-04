@@ -87,15 +87,23 @@ public class DiceManager : MonoBehaviour
     {
         // random number between 1 and 6 for the dice roll
         int rolledNum = Random.Range(1, 7);
-        if (GameManager.instance.CurrentPlayerId == 0 || GameManager.instance.CurrentPlayerId == 1)
+        if (GameManager.instance.CurrentPlayerId == 0)
             rolledNum = 6;
         GameManager.instance.DiceTotal = rolledNum;
         SetDice(rolledNum);
 
         isRolling = false;
 
-        // move on to check if the player has a legal move
-        GameManager.instance.UpdateGameState(GameState.CheckForLegalMove);
+        if(rolledNum == 6)
+        {
+            GameManager.instance.CurrentPlayerRollAgainCount++;
+            GameManager.instance.UpdateGameState(GameState.CheckForMultipleSixes);
+        }
+        else
+        {
+            // move on to check if the player has a legal move
+            GameManager.instance.UpdateGameState(GameState.CheckForLegalMove);
+        }
     }
 
     public void SetDice(int number)

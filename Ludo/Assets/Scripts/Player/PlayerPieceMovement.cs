@@ -9,4 +9,5 @@ public class PlayerPieceMovement
     public Vector3 DestinationPosition;
     public string InfoTextToDisplay;
     public bool IsScoringMove = false;
+    public bool IsInstantMovement = false;
 }

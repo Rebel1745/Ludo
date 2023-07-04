@@ -49,6 +49,9 @@ public class GameManager : MonoBehaviour
             case GameState.WaitingForRoll:
                 WaitingForRoll();
                 break;
+            case GameState.CheckForMultipleSixes:
+                PlayerManager.instance.CheckForMultipleSixes();
+                break;
             case GameState.CheckForLegalMove:
                 // if the player has a legal move, wait for it, otherwise move on to the next player
                 if (PlayerManager.instance.PlayerHasLegalMove())
@@ -108,10 +111,8 @@ public class GameManager : MonoBehaviour
 
     private void RollAgain()
     {
-        if (CurrentPlayerRollAgainCount <= MaximumRollAgain)
-            UpdateGameState(GameState.WaitingForRoll);
-        else
-            Debug.LogError("Something went awry in the roll again MaximumRollAgain check");
+        // another turn is as easy as just going back to before the dice has been rolled
+        UpdateGameState(GameState.WaitingForRoll);
     }
 
     private void NextTurn()
@@ -170,6 +171,7 @@ public enum GameState
     SelectPlayerDetails,
     SetupGame,
     WaitingForRoll,
+    CheckForMultipleSixes,
     CheckForLegalMove,
     WaitingForClick,
     WaitingForAnimation,

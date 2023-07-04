@@ -22,6 +22,7 @@ public class PlayerManager : MonoBehaviour
     Vector3 newPosition;
     Vector3 velocity = Vector3.zero;
     [SerializeField] float smoothTime = 0.25f;
+    float timeToMove;
 
     // finished players
     int playersFinished = 0;
@@ -46,6 +47,38 @@ public class PlayerManager : MonoBehaviour
         MovePieces();
     }
 
+    public void CheckForMultipleSixes()
+    {
+        if(GameManager.instance.CurrentPlayerRollAgainCount >= GameManager.instance.MaximumRollAgain)
+        {
+            // we have exceeded the total number of 6's in a row, do something about it
+            PlayerPiece pieceToSendHome = GetMostAdvancedPiece();
+            if (pieceToSendHome != null)
+                pieceToSendHome.SendPieceHome(pieceToSendHome, GameManager.instance.MaximumRollAgain + " 6's thrown in a row. Go back home!", true);
+        }
+        else
+        {
+            GameManager.instance.UpdateGameState(GameState.CheckForLegalMove);
+        }
+    }
+
+    PlayerPiece GetMostAdvancedPiece()
+    {
+        PlayerPiece piece = null;
+        int furthestDistance = -1;
+
+        foreach (PlayerPiece pp in Players[GameManager.instance.CurrentPlayerId].PlayerPieces)
+        {
+            if(!pp.IsInYard && !pp.IsScored && pp.TotalDistanceTravelled > furthestDistance)
+            {
+                piece = pp;
+                furthestDistance = pp.TotalDistanceTravelled;
+            }
+        }
+
+        return piece;
+    }
+
     // This is the AI portion of the code
     void SelectCPUPiece()
     {
@@ -65,6 +98,9 @@ public class PlayerManager : MonoBehaviour
 
     void MovePieces()
     {
+        // is the movement instant?
+        timeToMove = movementList[0].IsInstantMovement ? 0 : smoothTime;
+
         // first check if we have reached the target of the first element in the moveList
         if (movementList[0].DestinationTile == null)
             newPosition = movementList[0].DestinationPosition;
@@ -79,7 +115,7 @@ public class PlayerManager : MonoBehaviour
         else
         {
             // TODO: Update this with the ability to add height to the movement
-            movementList[0].PieceToMove.transform.position = Vector3.SmoothDamp(movementList[0].PieceToMove.transform.position, newPosition, ref velocity, smoothTime);
+            movementList[0].PieceToMove.transform.position = Vector3.SmoothDamp(movementList[0].PieceToMove.transform.position, newPosition, ref velocity, timeToMove);
         }        
     }
 
@@ -165,7 +201,7 @@ public class PlayerManager : MonoBehaviour
     void MoveToNextTurn()
     {
         //allow another roll if a 6 was rolled, otherwise move on to next turn
-        if (GameManager.instance.DiceTotal == 6)
+        if (GameManager.instance.DiceTotal == 6 && GameManager.instance.CurrentPlayerRollAgainCount < GameManager.instance.MaximumRollAgain)
             GameManager.instance.UpdateGameState(GameState.RollAgain);
         else
             GameManager.instance.UpdateGameState(GameState.NextTurn);
