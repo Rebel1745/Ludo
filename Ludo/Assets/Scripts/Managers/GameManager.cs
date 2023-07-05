@@ -31,7 +31,7 @@ public class GameManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        UpdateGameState(GameState.SelectPlayerDetails);
+        UpdateGameState(GameState.BuildBoard);
     }
 
     public void UpdateGameState(GameState newState)
@@ -40,6 +40,9 @@ public class GameManager : MonoBehaviour
 
         switch (newState)
         {
+            case GameState.BuildBoard:
+                BoardManager.instance.BuildBoard();
+                break;
             case GameState.SelectPlayerDetails:
                 SelectPlayerDetails();
                 break;
@@ -168,6 +171,7 @@ public class GameManager : MonoBehaviour
 
 public enum GameState
 {
+    BuildBoard,
     SelectPlayerDetails,
     SetupGame,
     WaitingForRoll,
