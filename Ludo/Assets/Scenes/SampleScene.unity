@@ -123,37 +123,6 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
---- !u!1 &1386047
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1386048}
-  m_Layer: 0
-  m_Name: Players
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &1386048
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1386047}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.2881899, y: -1.8081875, z: 5.0981054}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_RootOrder: 5
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &16765379
 GameObject:
   m_ObjectHideFlags: 0
@@ -1720,6 +1689,37 @@ Transform:
   m_Father: {fileID: 1807458326}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &364140396
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 364140397}
+  m_Layer: 0
+  m_Name: PieceManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &364140397
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 364140396}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1669500333}
+  m_RootOrder: 5
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &375911428
 GameObject:
   m_ObjectHideFlags: 0
@@ -1771,7 +1771,6 @@ MonoBehaviour:
   - {fileID: 2100000, guid: 83821057753a08142a211727f23174a3, type: 2}
   - {fileID: 2100000, guid: eaddd387bd989bb4d8fada957533aec6, type: 2}
   playerPrefab: {fileID: 7398688189274225705, guid: ec38ede6ab903d542b7d61e3b2e352e5, type: 3}
-  playersHolder: {fileID: 1386048}
   playerStartingTiles:
   - {fileID: 696190367}
   - {fileID: 1848688726}
@@ -2341,7 +2340,7 @@ RectTransform:
   - {fileID: 2490327374944801152}
   - {fileID: 1812725415}
   m_Father: {fileID: 0}
-  m_RootOrder: 6
+  m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
@@ -5695,6 +5694,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   boardParent: {fileID: 1956423244}
   tilePrefab: {fileID: 1063914794145928187, guid: ed466e48518ecf24cbd0807986655918, type: 3}
+  scoredTilePrefab: {fileID: 1063914794145928187, guid: f828a208bff640a4984912d8836a4b90, type: 3}
   crossLength: 5
   scoringTileMaterial: {fileID: 2100000, guid: 17dcd2dbb5139694aaa1ca9f89963e8d, type: 2}
   playerTileColours:
@@ -7562,7 +7562,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 7
+  m_RootOrder: 6
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1470942624
 GameObject:
@@ -8477,6 +8477,7 @@ Transform:
   - {fileID: 375911429}
   - {fileID: 783741077}
   - {fileID: 1317056816}
+  - {fileID: 364140397}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}

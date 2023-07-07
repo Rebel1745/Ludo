@@ -30,6 +30,10 @@ public class BoardManager : MonoBehaviour
     GameObject newTileGO, prevTileGO = null, firstTileGO;
     Tile newTile, prevTile = null, firstTile;
 
+    // info to pass to the PlayerManager
+    GameObject yardHolder, scoredHolder;
+    Tile[] startingTiles = new Tile[4];
+
     private void Awake()
     {
         instance = this;
@@ -43,11 +47,14 @@ public class BoardManager : MonoBehaviour
         CreateSurroundingTiles();
         CreateYardTiles();
         CreateScoredPiecesTiles();
+
+        // after the board has been created, move on to the player select phase
+        PlayerManager.instance.InitialiseBoardHolders(yardHolder.transform, startingTiles, scoredHolder.transform);
     }
 
     void CreateScoredPiecesTiles()
     {
-        GameObject scoredHolder = new GameObject { name = "Scored Pieces" };
+        scoredHolder = new GameObject { name = "Scored Pieces" };
         scoredHolder.transform.parent = boardParent;
 
         Vector3 startPos, tilePos;
@@ -67,13 +74,13 @@ public class BoardManager : MonoBehaviour
 
                 if(i % 2 == 0)
                 {
-                    tilePos = startPos - (safeZoneDirections[(i + 1) % 4]) * j;
-                    tilePos.x -= safeZoneDirections[(i + 1) % 4].x;
+                    tilePos = startPos - (safeZoneDirections[i]) * j;
+                    tilePos.z -= safeZoneDirections[i].z;
                 }
                 else
                 {
-                    tilePos = startPos - (safeZoneDirections[i] * j);
-                    tilePos.x -= safeZoneDirections[i].x;
+                    tilePos = startPos - (safeZoneDirections[(i + 1) % 4] * j);
+                    tilePos.z -= safeZoneDirections[(i + 1) % 4].z;
                 }                    
 
                 newTileGO = Instantiate(scoredTilePrefab, tilePos, Quaternion.identity, playerScoredHolder.transform);
@@ -84,7 +91,7 @@ public class BoardManager : MonoBehaviour
 
     void CreateYardTiles()
     {
-        GameObject yardHolder = new GameObject { name = "Player Yards"  };
+        yardHolder = new GameObject { name = "Player Yards"  };
         yardHolder.transform.parent = boardParent;
 
         Vector3 startPos, tilePos;
@@ -141,6 +148,10 @@ public class BoardManager : MonoBehaviour
 
         int dirCount = 0, tileCount = 0;
 
+        // reset the previous tile info
+        prevTileGO = null;
+        prevTile = null;
+
         // loop through all of the board directions
         for (int i = 0; i < gameBoardDirections.Length; i++)
         {
@@ -159,6 +170,7 @@ public class BoardManager : MonoBehaviour
                 {
                     newTileGO.GetComponentInChildren<Renderer>().material = playerTileColours[Mathf.FloorToInt(dirCount / 3)];
                     newTileGO.name = "Player" + (Mathf.FloorToInt(dirCount / 3) + 1) + "StartingSquare";
+                    startingTiles[Mathf.FloorToInt(dirCount / 3)] = newTile;
 
                     if(prevTileGO != null)
                     {
@@ -196,7 +208,7 @@ public class BoardManager : MonoBehaviour
 
     void CreateBranchingTile(GameObject tileGO, Tile tile, int playerId)
     {
-        tileGO.name = "Player" + 1 + "BranchingSquare";
+        tileGO.name = "Player" + (playerId + 1) + "BranchingSquare";
         tile.IsBranchTile = true;
         tile.PlayerIdForBranch = playerId;
         // TODO: If the tiles are rearranged in CreateSafeZones() the second getChild will need to be changed to GetChild(0)
@@ -215,6 +227,10 @@ public class BoardManager : MonoBehaviour
         //So change the BuildBoard to run after the players have been selected, but before the player pieces have been created
         for (int i = 0; i < 4; i++)
         {
+            // reset the previous tile info
+            prevTileGO = null;
+            prevTile = null;
+
             // loop through the players
             GameObject playerHolder = new GameObject { name = "Player " + (i + 1) };
             playerHolder.transform.parent = safeZoneHolder.transform;
@@ -226,6 +242,16 @@ public class BoardManager : MonoBehaviour
                 newTileGO = Instantiate(tilePrefab, pos, Quaternion.identity, playerHolder.transform);
                 newTileGO.name = "Player" + (i + 1) + "Safe" + (j + 1);
                 newTileGO.GetComponentInChildren<Renderer>().material = playerTileColours[i];
+                newTile = newTileGO.GetComponent<Tile>();
+
+                // if this is the first safe zone tile, the next tile will be the scoring tile
+                if (j == 0)
+                    newTile.NextTile = scoringTileGO.GetComponent<Tile>();
+                else
+                    newTile.NextTile = prevTile;
+
+                prevTileGO = newTileGO;
+                prevTile = newTile;
             }
         }
     }

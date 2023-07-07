@@ -9,7 +9,6 @@ public class PlayerManager : MonoBehaviour
     [SerializeField] Transform playerYardHolder; // the holding area for player pieces
     [SerializeField] Material[] playerMaterials;
     [SerializeField] GameObject playerPrefab;
-    [SerializeField] Transform playersHolder;
     [SerializeField] Tile[] playerStartingTiles;
     [SerializeField] Transform playerScoredTileHolder;
     [SerializeField] GameObject[] allPlayerDetails;
@@ -45,6 +44,15 @@ public class PlayerManager : MonoBehaviour
             return;
 
         MovePieces();
+    }
+
+    public void InitialiseBoardHolders(Transform yardHolder, Tile[] startingTiles, Transform scoredTileHolder)
+    {
+        playerYardHolder = yardHolder;
+        playerStartingTiles = startingTiles;
+        playerScoredTileHolder = scoredTileHolder;
+
+        GameManager.instance.UpdateGameState(GameState.SelectPlayerDetails);
     }
 
     public void CheckForMultipleSixes()
@@ -227,6 +235,8 @@ public class PlayerManager : MonoBehaviour
         Tile startingYardTile;
         Tile scoredTile;
 
+        GameObject playersHolder = new GameObject { name = "Players" };
+
         // init players array
         Players = new Player[playerYardHolder.childCount];
 
@@ -241,7 +251,7 @@ public class PlayerManager : MonoBehaviour
                 name = newPlayerDetails.PlayerName + " Pieces"
             };
 
-            newPlayerParent.transform.parent = playersHolder;
+            newPlayerParent.transform.parent = playersHolder.transform;
 
             // setup the player details
             Players[i] = new Player

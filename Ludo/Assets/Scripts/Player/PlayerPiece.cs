@@ -131,12 +131,14 @@ public class PlayerPiece : MonoBehaviour
     private void OnMouseExit()
     {
         if (CanWeClickIt())
+        {
             OutlineLegalPiece();
-        else
-            RemoveLegalPieceOutline();
 
-        if(!this.IsInYard)
-            RemovePossiblePieceMovement();
+            if (!this.IsInYard)
+                RemovePossiblePieceMovement();
+        }
+        else
+            RemoveLegalPieceOutline();        
     }
 
     bool CanWeClickIt()
