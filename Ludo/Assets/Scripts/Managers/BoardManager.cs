@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -8,6 +9,7 @@ public class BoardManager : MonoBehaviour
 
     [SerializeField] Transform boardParent;
     [SerializeField] GameObject tilePrefab;
+    [SerializeField] GameObject scoredTilePrefab;
     [SerializeField] int crossLength = 5; // the number of tiles making up the board shape for the longer edge portions
     readonly int crossWidth = 3; // the number of tiles making up the board shape for the smaller edge portions. TODO: Allow this to be changed to increase the size? Would require more calculations in the creation code
 
@@ -39,11 +41,84 @@ public class BoardManager : MonoBehaviour
         CreateScoringTile();
         CreateSafeZones();
         CreateSurroundingTiles();
-        CreateYards();
+        CreateYardTiles();
+        CreateScoredPiecesTiles();
     }
 
-    void CreateYards()
+    void CreateScoredPiecesTiles()
     {
+        GameObject scoredHolder = new GameObject { name = "Scored Pieces" };
+        scoredHolder.transform.parent = boardParent;
+
+        Vector3 startPos, tilePos;
+        int scoredNo;
+
+        for (int i = 0; i < 4; i++)
+        {
+            GameObject playerScoredHolder = new GameObject { name = "Player " + (i + 1) + " Scored Pieces" };
+            playerScoredHolder.transform.parent = scoredHolder.transform;
+            
+            startPos = (safeZoneDirections[i] + safeZoneDirections[(i + 1) % 4]) * (crossLength + 1);            
+            scoredNo = 0;
+
+            for (int j = 0; j < 4; j++)
+            {
+                scoredNo++;
+
+                if(i % 2 == 0)
+                {
+                    tilePos = startPos - (safeZoneDirections[(i + 1) % 4]) * j;
+                    tilePos.x -= safeZoneDirections[(i + 1) % 4].x;
+                }
+                else
+                {
+                    tilePos = startPos - (safeZoneDirections[i] * j);
+                    tilePos.x -= safeZoneDirections[i].x;
+                }                    
+
+                newTileGO = Instantiate(scoredTilePrefab, tilePos, Quaternion.identity, playerScoredHolder.transform);
+                newTileGO.name = "Player" + (i + 1) + "Scored" + scoredNo;
+            }
+        }
+    }
+
+    void CreateYardTiles()
+    {
+        GameObject yardHolder = new GameObject { name = "Player Yards"  };
+        yardHolder.transform.parent = boardParent;
+
+        Vector3 startPos, tilePos;
+        int yardNo = 0;
+
+        for (int i = 0; i < 4; i++)
+        {
+            GameObject playerYardHolder = new GameObject { name = "Player " + (i + 1) + " Yard" };
+            playerYardHolder.transform.parent = yardHolder.transform;
+
+            // TODO: Change the '*3' to a variable to scale nicely for other board sizes
+            startPos = (safeZoneDirections[i] + safeZoneDirections[(i + 1) % 4]) * 3;
+            yardNo = 0;
+
+            for (int j = 0; j < 2; j++)
+            {
+                for (int k = 0; k < 2; k++)
+                {
+                    yardNo++;
+
+                    // TODO: I'm not really sure how this bit works... maybe clarify it in my mind a bit?
+                    if(i % 2 == 0)
+                        tilePos = new Vector3(startPos.x + safeZoneDirections[(i + 1) % 4].x * k, 0f, startPos.z + safeZoneDirections[i].z * j);
+                    else
+                        tilePos = new Vector3(startPos.x + safeZoneDirections[i].x * k, 0f, startPos.z + safeZoneDirections[(i + 1) % 4].z * j);
+
+                    newTileGO = Instantiate(tilePrefab, tilePos, Quaternion.identity, playerYardHolder.transform);
+                    newTileGO.GetComponentInChildren<Renderer>().material = playerTileColours[i];
+                    newTileGO.name = "Player" + (i + 1) + "Yard" + yardNo;
+                }
+            }
+        }
+
+
 
     }
 
