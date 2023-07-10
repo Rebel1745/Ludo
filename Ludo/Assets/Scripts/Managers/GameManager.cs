@@ -92,6 +92,9 @@ public class GameManager : MonoBehaviour
             currentPlayer = PlayerManager.instance.Players[i];
             gameOverPlayerDetailsHolder.transform.GetChild(currentPlayer.FinishedPosition - 1).GetComponent<GameOverDetails>().SetDetails(currentPlayer.PlayerName, currentPlayer.PlayerColour);
         }
+
+        print(PlayerManager.instance.Players[0].FinishedPosition);
+        PlayerManager.instance.ResetGame();
     }
 
     void SetupGame()

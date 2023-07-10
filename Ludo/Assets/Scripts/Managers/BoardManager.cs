@@ -121,6 +121,8 @@ public class BoardManager : MonoBehaviour
                     newTileGO = Instantiate(tilePrefab, tilePos, Quaternion.identity, playerYardHolder.transform);
                     newTileGO.GetComponentInChildren<Renderer>().material = playerTileColours[i];
                     newTileGO.name = "Player" + (i + 1) + "Yard" + yardNo;
+                    newTile = newTileGO.GetComponent<Tile>();
+                    newTile.IsYardTile = true;
                 }
             }
         }
@@ -243,6 +245,7 @@ public class BoardManager : MonoBehaviour
                 newTileGO.name = "Player" + (i + 1) + "Safe" + (j + 1);
                 newTileGO.GetComponentInChildren<Renderer>().material = playerTileColours[i];
                 newTile = newTileGO.GetComponent<Tile>();
+                newTile.IsSafeTile = true;
 
                 // if this is the first safe zone tile, the next tile will be the scoring tile
                 if (j == 0)
@@ -284,6 +287,14 @@ public class BoardManager : MonoBehaviour
         Tile currentTile = pp.CurrentTile;
         Tile destTile;
 
+        // if this move would take us out of the yard then tilesAhead would just be the starting tile
+        if(pp.IsInYard && spacesAhead == 6)
+        {
+            tilesAhead = new Tile[1];
+            tilesAhead[0] = pp.StartingTile;
+            return tilesAhead;
+        }
+
         for (int i = 0; i < GameManager.instance.DiceTotal; i++)
         {
             // if there is no next tile then we have reached the scoring
@@ -301,6 +312,13 @@ public class BoardManager : MonoBehaviour
         }
 
         return tilesAhead;
+    }
+
+    public Tile GetTileAhead(PlayerPiece pp, int spacesAhead)
+    {
+        Tile[] tilesAhead = GetTilesAhead(pp, spacesAhead);
+
+        return tilesAhead[tilesAhead.Length - 1];
     }
 
     public bool TileContainsOpponentsPiece(Tile tile)

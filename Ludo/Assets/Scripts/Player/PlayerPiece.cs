@@ -60,6 +60,9 @@ public class PlayerPiece : MonoBehaviour
         CurrentTile = yardTile;
         ScoringTile = scoredTile;
         StartingTile = startingTile;
+        IsInYard = true;
+        IsScored = false;
+        this.transform.position = yardTile.transform.position;
     }
 
     public void OutlineLegalPiece()

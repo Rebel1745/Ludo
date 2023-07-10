@@ -12,6 +12,7 @@ public class PlayerManager : MonoBehaviour
     [SerializeField] Tile[] playerStartingTiles;
     [SerializeField] Transform playerScoredTileHolder;
     [SerializeField] GameObject[] allPlayerDetails;
+    GameObject playersHolder;
 
     public Player[] Players;
 
@@ -35,7 +36,7 @@ public class PlayerManager : MonoBehaviour
     private void Update()
     {
         if (GameManager.instance.State == GameState.WaitingForClick && GameManager.instance.IsCurrentPlayerCPU)
-            SelectCPUPiece();
+            AIManager.instance.DoAI();
 
         if (GameManager.instance.State != GameState.WaitingForAnimation || !isAnimating)
             return;
@@ -85,23 +86,6 @@ public class PlayerManager : MonoBehaviour
         }
 
         return piece;
-    }
-
-    // This is the AI portion of the code
-    void SelectCPUPiece()
-    {
-        List<PlayerPiece> legalPieces = new List<PlayerPiece>();
-
-        // fisrt get all of the pieces that can make a move
-        foreach (PlayerPiece pp in Players[GameManager.instance.CurrentPlayerId].PlayerPieces)
-        {
-            if (PlayerPieceHasLegalMove(pp))
-                legalPieces.Add(pp);
-        }
-
-        // select a random piece from this list to move
-        // TODO: make this AI more complicated
-        legalPieces[Random.Range(0, legalPieces.Count)].BuildMovementList();
     }
 
     void MovePieces()
@@ -235,7 +219,7 @@ public class PlayerManager : MonoBehaviour
         Tile startingYardTile;
         Tile scoredTile;
 
-        GameObject playersHolder = new GameObject { name = "Players" };
+        playersHolder = new GameObject { name = "Players" };
 
         // init players array
         Players = new Player[playerYardHolder.childCount];
@@ -291,6 +275,29 @@ public class PlayerManager : MonoBehaviour
         UIManager.instance.HidePlayerSelectScreen();
 
         // after the players have been created move the game on
+        GameManager.instance.UpdateGameState(GameState.SetupGame);
+    }
+
+    public void ResetGame()
+    {
+        UIManager.instance.HideGameOverUI();
+        playersFinished = 0;
+
+        PlayerPiece pp;
+
+        // loop through the players
+        for (int i = 0; i < Players.Length; i++)
+        {
+            Players[i].IsFinished = false;
+            Players[i].FinishedPosition = 0;
+            // loop through the player pieces
+            for (int j = 0; j < Players[i].PlayerPieces.Length; j++)
+            {
+                pp = Players[i].PlayerPieces[j];
+                pp.SetupPlayerPiece(i, pp.PlayerName, pp.StartingYardTile, pp.ScoringTile, playerStartingTiles[i]);
+            }
+        }
+
         GameManager.instance.UpdateGameState(GameState.SetupGame);
     }
 
@@ -357,5 +364,59 @@ public class PlayerManager : MonoBehaviour
         {
             pp.RemoveLegalPieceOutline();
         }
+    }
+
+    public PlayerPiece[] GetPiecesInYard()
+    {
+        return GetPiecesInYard(GameManager.instance.CurrentPlayerId);
+    }
+
+    public PlayerPiece[] GetPiecesInYard(int pId)
+    {
+        List<PlayerPiece> piecesInYard = new List<PlayerPiece>();
+
+        foreach(PlayerPiece pp in Players[pId].PlayerPieces)
+        {
+            if (!pp.IsScored && pp.IsInYard)
+                piecesInYard.Add(pp);
+        }
+
+        return piecesInYard.ToArray();
+    }
+
+    public PlayerPiece[] GetPiecesOnBoard()
+    {
+        return GetPiecesOnBoard(GameManager.instance.CurrentPlayerId);
+    }
+
+    public PlayerPiece[] GetPiecesOnBoard(int pId)
+    {
+        List<PlayerPiece> piecesOnBoard = new List<PlayerPiece>();
+
+        foreach(PlayerPiece pp in Players[pId].PlayerPieces)
+        {
+            if (!pp.IsScored && !pp.IsInYard)
+                piecesOnBoard.Add(pp);
+        }
+
+        return piecesOnBoard.ToArray();
+    }
+
+    public PlayerPiece[] GetScoredPieces()
+    {
+        return GetScoredPieces(GameManager.instance.CurrentPlayerId);
+    }
+
+    public PlayerPiece[] GetScoredPieces(int pId)
+    {
+        List<PlayerPiece> scoredPieces = new List<PlayerPiece>();
+
+        foreach(PlayerPiece pp in Players[pId].PlayerPieces)
+        {
+            if (pp.IsScored)
+                scoredPieces.Add(pp);
+        }
+
+        return scoredPieces.ToArray();
     }
 }

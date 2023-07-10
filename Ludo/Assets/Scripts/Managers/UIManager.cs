@@ -29,8 +29,18 @@ public class UIManager : MonoBehaviour
         gameOverUI.SetActive(true);
     }
 
+    public void HideGameOverUI()
+    {
+        gameOverUI.SetActive(false);
+    }
+
     public void ShowGameUI()
     {
         gameUI.SetActive(true);
+    }
+
+    public void PlayAgain()
+    {
+        PlayerManager.instance.ResetGame();
     }
 }
