@@ -63,6 +63,8 @@ public class PlayerPiece : MonoBehaviour
         IsInYard = true;
         IsScored = false;
         this.transform.position = yardTile.transform.position;
+        // set the PlayerPiece on the tile
+        yardTile.PlayerPieces.Add(this);
     }
 
     public void OutlineLegalPiece()

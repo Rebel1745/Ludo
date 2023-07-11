@@ -8,6 +8,7 @@ public class Player
     public string PlayerName;
     public Color PlayerColour;
     public bool IsPlayerCPU = false;
+    public AIType CPUType;
     public PlayerPiece[] PlayerPieces;
     public bool IsFinished = false;
     public int FinishedPosition = 0;

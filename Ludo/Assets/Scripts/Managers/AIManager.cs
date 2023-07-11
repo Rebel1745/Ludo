@@ -6,13 +6,44 @@ public class AIManager : MonoBehaviour
 {
     public static AIManager instance;
 
+    // AI Traits
+    AIType currentAIType;
+    float aggressionBonus;
+    float cautionBonus;
+
     private void Awake()
     {
         instance = this;
     }
 
+    void SetBonuses(AIType aiType)
+    {
+        currentAIType = aiType;
+
+        switch (aiType)
+        {
+            case AIType.Standard:
+                aggressionBonus = 0f;
+                cautionBonus = 0f;
+                break;
+            case AIType.Aggressive:
+                aggressionBonus = 0.5f;
+                cautionBonus = -0.5f;
+                break;
+            case AIType.Cautious:
+                aggressionBonus = -0.5f;
+                cautionBonus = 0.5f;
+                break;
+            case AIType.Random:
+                break;
+        }
+    }
+
     public void DoAI()
     {
+        // set the aitype and the bonuses
+        SetBonuses(PlayerManager.instance.Players[GameManager.instance.CurrentPlayerId].CPUType);
+
         List<PlayerPiece> legalPieces = new List<PlayerPiece>();
 
         // fisrt get all of the pieces that can make a move
@@ -23,7 +54,7 @@ public class AIManager : MonoBehaviour
         }
 
         // for testing, player 1 gets good AI, other players get random
-        if(GameManager.instance.CurrentPlayerId == 0)
+        if(currentAIType != AIType.Random)
             SelectPieceToMove(legalPieces.ToArray());
         else
             legalPieces[Random.Range(0, legalPieces.Count)].BuildMovementList();
@@ -104,4 +135,12 @@ public class AIManager : MonoBehaviour
 
         return goodness;
     }
+}
+
+public enum AIType
+{
+    Standard,
+    Aggressive,
+    Cautious,
+    Random
 }

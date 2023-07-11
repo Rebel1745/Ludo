@@ -23,6 +23,12 @@ public class GameManager : MonoBehaviour
     public int CurrentPlayerRollAgainCount = 0;
     public int MaximumRollAgain = 3;
 
+    [Space()]
+    [Header("AI Testing")]
+    public bool IsAITesting = false;
+    public int MaxGamesToTest = 10;
+    int gamesTested = 1;
+
     private void Awake()
     {
         instance = this;
@@ -93,8 +99,13 @@ public class GameManager : MonoBehaviour
             gameOverPlayerDetailsHolder.transform.GetChild(currentPlayer.FinishedPosition - 1).GetComponent<GameOverDetails>().SetDetails(currentPlayer.PlayerName, currentPlayer.PlayerColour);
         }
 
-        print(PlayerManager.instance.Players[0].FinishedPosition);
-        PlayerManager.instance.ResetGame();
+        if (IsAITesting)
+        {
+            gamesTested++;
+            print(PlayerManager.instance.Players[0].FinishedPosition);
+            if(gamesTested < MaxGamesToTest)
+                PlayerManager.instance.ResetGame();
+        }        
     }
 
     void SetupGame()

@@ -29,9 +29,9 @@ public class BoardManager : MonoBehaviour
 
     GameObject newTileGO, prevTileGO = null, firstTileGO;
     Tile newTile, prevTile = null, firstTile;
-
-    // info to pass to the PlayerManager
-    GameObject yardHolder, scoredHolder;
+    
+    // different tile holders
+    GameObject yardHolder, scoredHolder, tileHolder;
     Tile[] startingTiles = new Tile[4];
 
     private void Awake()
@@ -50,6 +50,20 @@ public class BoardManager : MonoBehaviour
 
         // after the board has been created, move on to the player select phase
         PlayerManager.instance.InitialiseBoardHolders(yardHolder.transform, startingTiles, scoredHolder.transform);
+    }
+
+    public void ResetBoard()
+    {
+        Tile[] allTiles = boardParent.GetComponentsInChildren<Tile>();
+
+        for (int i = 0; i < allTiles.Length; i++)
+        {
+            if(allTiles[i].PlayerPieces.Count != 0)
+            {
+                // the player that finished 4th would still have had piece(s) on the board, remove them from the tiles when we start again
+                allTiles[i].PlayerPieces.Clear();
+            }
+        }
     }
 
     void CreateScoredPiecesTiles()
@@ -140,7 +154,7 @@ public class BoardManager : MonoBehaviour
             crossLength, crossLength, crossWidth
         };
 
-        GameObject tileHolder = new GameObject { name = "Game Tiles" };
+        tileHolder = new GameObject { name = "Game Tiles" };
         tileHolder.transform.parent = boardParent;
 
         // start on the player1 starting square

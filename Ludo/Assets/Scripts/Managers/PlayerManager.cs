@@ -6,11 +6,11 @@ public class PlayerManager : MonoBehaviour
 {
     public static PlayerManager instance;
 
-    [SerializeField] Transform playerYardHolder; // the holding area for player pieces
+    Transform playerYardHolder; // the holding area for player pieces
     [SerializeField] Material[] playerMaterials;
     [SerializeField] GameObject playerPrefab;
-    [SerializeField] Tile[] playerStartingTiles;
-    [SerializeField] Transform playerScoredTileHolder;
+    Tile[] playerStartingTiles;
+    Transform playerScoredTileHolder;
     [SerializeField] GameObject[] allPlayerDetails;
     GameObject playersHolder;
 
@@ -236,13 +236,14 @@ public class PlayerManager : MonoBehaviour
             };
 
             newPlayerParent.transform.parent = playersHolder.transform;
-
+            
             // setup the player details
             Players[i] = new Player
             {
                 PlayerId = i,
                 PlayerName = newPlayerDetails.PlayerName,
                 IsPlayerCPU = newPlayerDetails.isCPU,
+                CPUType = (AIType)newPlayerDetails.CPUType,
                 PlayerPieces = new PlayerPiece[playerYardHolder.GetChild(i).childCount],
                 PlayerColour = newPlayerDetails.ColourImage.color
             };
@@ -264,8 +265,6 @@ public class PlayerManager : MonoBehaviour
                 // add this piece to the player array
                 Players[i].PlayerPieces[j] = newPlayerPiece;
 
-                // set the PlayerPiece on the tile
-                startingYardTile.PlayerPieces.Add(newPlayerPiece);
             }
 
             // save the player details to PlayerPrefs
@@ -280,6 +279,9 @@ public class PlayerManager : MonoBehaviour
 
     public void ResetGame()
     {
+        // reset the board
+        BoardManager.instance.ResetBoard();
+
         UIManager.instance.HideGameOverUI();
         playersFinished = 0;
 
