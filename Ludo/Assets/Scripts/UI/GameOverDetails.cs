@@ -8,9 +8,11 @@ public class GameOverDetails : MonoBehaviour
 {
     [SerializeField] TMP_Text nameText;
     [SerializeField] Image colourImage;
+    public Player player { get; protected set; }
 
-    public void SetDetails(string name, Color col)
+    public void SetDetails(Player p, string name, Color col)
     {
+        player = p;
         nameText.text = name;
         colourImage.color = col;
     }

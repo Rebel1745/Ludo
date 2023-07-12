@@ -27,7 +27,8 @@ public class GameManager : MonoBehaviour
     [Header("AI Testing")]
     public bool IsAITesting = false;
     public int MaxGamesToTest = 10;
-    int gamesTested = 1;
+    int gamesTested = 0;
+    int standardPoints, aggressivePoints, cautiousPoints, wildcardPoints, randomPoints, roundPoints;
 
     private void Awake()
     {
@@ -96,13 +97,56 @@ public class GameManager : MonoBehaviour
         for (int i = 0; i < PlayerManager.instance.Players.Length; i++)
         {
             currentPlayer = PlayerManager.instance.Players[i];
-            gameOverPlayerDetailsHolder.transform.GetChild(currentPlayer.FinishedPosition - 1).GetComponent<GameOverDetails>().SetDetails(currentPlayer.PlayerName, currentPlayer.PlayerColour);
+            gameOverPlayerDetailsHolder.transform.GetChild(currentPlayer.FinishedPosition - 1).GetComponent<GameOverDetails>().SetDetails(currentPlayer, currentPlayer.PlayerName, currentPlayer.PlayerColour);
         }
 
         if (IsAITesting)
         {
             gamesTested++;
-            print(PlayerManager.instance.Players[0].FinishedPosition);
+
+            for (int i = 0; i < 4; i++)
+            {
+                currentPlayer = gameOverPlayerDetailsHolder.transform.GetChild(i).GetComponent<GameOverDetails>().player;
+
+                // assign points for finishing position
+                switch (currentPlayer.FinishedPosition)
+                {
+                    case 1:
+                        roundPoints = 3;
+                        break;
+                    case 2:
+                        roundPoints = 2;
+                        break;
+                    case 3:
+                        roundPoints = 1;
+                        break;
+                    case 4:
+                        roundPoints = 0;
+                        break;
+                }
+
+                // add the points to the AIType
+                switch (currentPlayer.CPUType) {
+                    case AIType.Standard:
+                        standardPoints += roundPoints;
+                        break;
+                    case AIType.Aggressive:
+                        aggressivePoints += roundPoints;
+                        break;
+                    case AIType.Cautious:
+                        cautiousPoints += roundPoints;
+                        break;
+                    case AIType.WildCard:
+                        wildcardPoints += roundPoints;
+                        break;
+                    case AIType.Random:
+                        randomPoints += roundPoints;
+                        break;
+
+                }
+            }
+            print("Standard: " + standardPoints + ". Aggressive: " + aggressivePoints + ". Cautious: " + cautiousPoints + ". Wild Card: " + wildcardPoints + ". Random: " + randomPoints);
+
             if(gamesTested < MaxGamesToTest)
                 PlayerManager.instance.ResetGame();
         }        

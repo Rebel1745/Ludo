@@ -1106,6 +1106,8 @@ MonoBehaviour:
       m_Image: {fileID: 0}
     - m_Text: Cautious
       m_Image: {fileID: 0}
+    - m_Text: Wild Card
+      m_Image: {fileID: 0}
     - m_Text: Random
       m_Image: {fileID: 0}
   m_OnValueChanged:
@@ -6881,6 +6883,8 @@ MonoBehaviour:
       m_Image: {fileID: 0}
     - m_Text: Cautious
       m_Image: {fileID: 0}
+    - m_Text: Wild Card
+      m_Image: {fileID: 0}
     - m_Text: Random
       m_Image: {fileID: 0}
   m_OnValueChanged:
@@ -7145,7 +7149,7 @@ MonoBehaviour:
   CurrentPlayerRollAgainCount: 0
   MaximumRollAgain: 3
   IsAITesting: 1
-  MaxGamesToTest: 10
+  MaxGamesToTest: 20
 --- !u!1001 &911415601
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -8629,6 +8633,8 @@ MonoBehaviour:
     - m_Text: Aggressive
       m_Image: {fileID: 0}
     - m_Text: Cautious
+      m_Image: {fileID: 0}
+    - m_Text: Wild Card
       m_Image: {fileID: 0}
     - m_Text: Random
       m_Image: {fileID: 0}
@@ -10535,6 +10541,8 @@ MonoBehaviour:
     - m_Text: Aggressive
       m_Image: {fileID: 0}
     - m_Text: Cautious
+      m_Image: {fileID: 0}
+    - m_Text: Wild Card
       m_Image: {fileID: 0}
     - m_Text: Random
       m_Image: {fileID: 0}
@@ -18576,7 +18584,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &2490327374951297536
 RectTransform:
   m_ObjectHideFlags: 0

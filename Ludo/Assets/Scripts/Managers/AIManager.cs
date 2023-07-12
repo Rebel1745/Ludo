@@ -27,12 +27,16 @@ public class AIManager : MonoBehaviour
                 cautionBonus = 0f;
                 break;
             case AIType.Aggressive:
-                aggressionBonus = 0.5f;
+                aggressionBonus = 1f;
                 cautionBonus = -0.5f;
                 break;
             case AIType.Cautious:
                 aggressionBonus = -0.5f;
-                cautionBonus = 0.5f;
+                cautionBonus = 1f;
+                break;
+            case AIType.WildCard:
+                aggressionBonus = Random.Range(-1f, 1f);
+                cautionBonus = Random.Range(-1f, 1f);
                 break;
             case AIType.Random:
                 break;
@@ -66,28 +70,35 @@ public class AIManager : MonoBehaviour
         float pieceGoodness = -Mathf.Infinity;
         float currentGoodness;
 
-        foreach(PlayerPiece pp in legalPieces)
+        if(legalPieces.Length == 1)
         {
-            currentGoodness = GetPieceGoodness(pp);
-
-            if(currentGoodness > pieceGoodness)
-            {
-                pieceGoodness = currentGoodness;
-                pieceToMove = pp;
-            }
+            legalPieces[0].BuildMovementList();
         }
-        
-        pieceToMove.BuildMovementList();
+        else
+        {
+            foreach (PlayerPiece pp in legalPieces)
+            {
+                currentGoodness = GetPieceGoodness(pp);
+
+                if (currentGoodness > pieceGoodness)
+                {
+                    pieceGoodness = currentGoodness;
+                    pieceToMove = pp;
+                }
+            }
+
+            pieceToMove.BuildMovementList();
+        }        
     }
 
     float GetPieceGoodness(PlayerPiece pp)
     {
         Tile currentTile = pp.CurrentTile;
         Tile futureTile = BoardManager.instance.GetTileAhead(pp, GameManager.instance.DiceTotal);
-        float goodness = 0f;
 
         // add a little random noise to the outcome
-        //float goodness = Random.Range(-0.1f, 0.1f);
+        float goodness = Random.Range(-0.1f, 0.1f);
+        //float goodness = 0f;
 
         // if we are currently safe, it is not important that we move
         if (currentTile.IsSafeTile)
@@ -95,26 +106,32 @@ public class AIManager : MonoBehaviour
 
         // if we aren't already safe but we can be, we probably should
         if (!currentTile.IsSafeTile && (futureTile.IsSafeTile || futureTile.IsScoringTile))
-            goodness += 0.8f;
+            goodness += 0.8f + cautionBonus;
 
         // if we are currently with friends we are safe
         if (currentTile.PlayerPieces.Count > 1)
-            goodness -= 0.5f;
+            goodness += -0.5f - cautionBonus;
 
         // if there is a piece where we will land
         if(futureTile.PlayerPieces.Count > 0)
         {
             // if we would join our own piece on the tile it's good
             if (futureTile.PlayerPieces[0].PlayerId == pp.PlayerId)
-                goodness += 0.5f;
+                goodness += 0.5f + cautionBonus;
 
             // if there is only one enemy piece on the tile we can bop them off
             else if (futureTile.PlayerPieces.Count == 1)
-                goodness += 0.8f;
+                goodness += 0.8f + aggressionBonus;
 
             // if there are multiple enemies on that tile, we will get bopped off
             else
                 goodness -= 100f;
+        }
+
+        if (!currentTile.IsSafeTile) {
+            // calculate how far around the board the piece is
+            float percentComplete = pp.TotalDistanceTravelled / BoardManager.instance.SurroundingTileCount;
+            goodness += (percentComplete / 2f) + cautionBonus;
         }
 
         // special cases for a 6
@@ -126,11 +143,11 @@ public class AIManager : MonoBehaviour
 
             // if this is our 2nd 6 in a row, get another piece out for safety
             if (GameManager.instance.CurrentPlayerRollAgainCount == (GameManager.instance.MaximumRollAgain - 1) && pp.IsInYard)
-                goodness += 0.5f;
+                goodness += 0.5f + cautionBonus;
 
             // if we only have one piece on the board, maybe get another piece out
             if (piecesOnBoard.Length == 1 && pp.IsInYard)
-                goodness += 0.25f;
+                goodness += 0.25f + cautionBonus;
         }
 
         return goodness;
@@ -142,5 +159,6 @@ public enum AIType
     Standard,
     Aggressive,
     Cautious,
+    WildCard,
     Random
 }

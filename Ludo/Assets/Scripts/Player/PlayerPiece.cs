@@ -122,7 +122,7 @@ public class PlayerPiece : MonoBehaviour
 
     private void OnMouseOver()
     {
-        if (CanWeClickIt())
+        if (CanWeClickIt() && !PlayerManager.instance.Players[this.PlayerId].IsPlayerCPU)
         {
             pieceOutline.OutlineColor = selectableOutlineColour;
             pieceOutline.OutlineWidth = mouseOverOutlineWidth;

@@ -64,6 +64,8 @@ public class PlayerManager : MonoBehaviour
             PlayerPiece pieceToSendHome = GetMostAdvancedPiece();
             if (pieceToSendHome != null)
                 pieceToSendHome.SendPieceHome(pieceToSendHome, GameManager.instance.MaximumRollAgain + " 6's thrown in a row. Go back home!", true);
+            else
+                GameManager.instance.UpdateGameState(GameState.NextTurn);
         }
         else
         {

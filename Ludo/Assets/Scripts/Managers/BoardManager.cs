@@ -34,6 +34,8 @@ public class BoardManager : MonoBehaviour
     GameObject yardHolder, scoredHolder, tileHolder;
     Tile[] startingTiles = new Tile[4];
 
+    public int SurroundingTileCount { get; protected set; }
+
     private void Awake()
     {
         instance = this;
@@ -215,6 +217,9 @@ public class BoardManager : MonoBehaviour
                 }
             }
         }
+
+        // save the total number of tiles so we can use it to find out how far a piece is around the board
+        SurroundingTileCount = tileCount;
 
         // the final tile will also be a branching tile for player1
         CreateBranchingTile(prevTileGO, prevTile, 0);
