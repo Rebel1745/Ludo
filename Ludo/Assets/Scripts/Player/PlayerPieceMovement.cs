@@ -10,4 +10,8 @@ public class PlayerPieceMovement
     public string InfoTextToDisplay;
     public bool IsScoringMove = false;
     public bool IsInstantMovement = false;
+    public bool PlaySound = false;
+    public AudioClip SoundToPlay;
+    public float minimumPitch = 1f;
+    public float maximumPitch = 1f;
 }

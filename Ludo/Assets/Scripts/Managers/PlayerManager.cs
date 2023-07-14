@@ -6,6 +6,7 @@ public class PlayerManager : MonoBehaviour
 {
     public static PlayerManager instance;
 
+    [Header("Configuration")]
     Transform playerYardHolder; // the holding area for player pieces
     [SerializeField] Material[] playerMaterials;
     [SerializeField] GameObject playerPrefab;
@@ -17,12 +18,25 @@ public class PlayerManager : MonoBehaviour
     public Player[] Players;
 
     // animation
+    [Space]
+    [Header("Animation")]
     bool isAnimating = false;
     List<PlayerPieceMovement> movementList;
     Vector3 newPosition;
     Vector3 velocity = Vector3.zero;
     [SerializeField] float smoothTime = 0.25f;
+    [SerializeField] float smoothTimeMultiplier = 1;
+    [SerializeField] float smoothDistance = 0.01f;
+    [SerializeField] float audioDistance = 0.1f;
     float timeToMove;
+
+    // height
+    [Header("Height")]
+    float maxHeight = 0.5f;
+    [SerializeField] int maxHeightMultiplier = 1;
+    [SerializeField] AnimationCurve heightCurve;
+    float heightTime;
+    float targetHeight;
 
     // finished players
     int playersFinished = 0;
@@ -93,32 +107,49 @@ public class PlayerManager : MonoBehaviour
     void MovePieces()
     {
         // is the movement instant?
-        timeToMove = movementList[0].IsInstantMovement ? 0 : smoothTime;
+        timeToMove = movementList[0].IsInstantMovement ? 0 : (smoothTime / smoothTimeMultiplier);
 
-        // first check if we have reached the target of the first element in the moveList
+        // calculate the height to add at the current position
+        targetHeight = heightCurve.Evaluate(heightTime / smoothTime) * maxHeight * maxHeightMultiplier;
+
+        // if we aren't moving to a new tile and are just rearranging pieces on a single tile, make the movement instantaneous
         if (movementList[0].DestinationTile == null)
             newPosition = movementList[0].DestinationPosition;
         else
-            newPosition = movementList[0].DestinationTile.transform.position;
+            newPosition = new Vector3(movementList[0].DestinationTile.transform.position.x, targetHeight, movementList[0].DestinationTile.transform.position.z);
 
-        if (Vector3.Distance(movementList[0].PieceToMove.transform.position, newPosition) < 0.01)
+        // audio check (this happens before the smoothDistance check to counter the lag caused by the SmoothDamp function)
+        if (Vector3.Distance(movementList[0].PieceToMove.transform.position, newPosition) < audioDistance)
         {
-            // we are at our destination, update the movementList to remove this movement
+            // we are at our destination play the piece movement sound
+            if (movementList[0].PlaySound)
+            {
+                AudioManager.instance.PlayAudioClip(movementList[0].SoundToPlay, movementList[0].minimumPitch, movementList[0].maximumPitch);
+                movementList[0].PlaySound = false;
+            }
+        }
+
+        // first check if we have reached the target of the first element in the moveList
+        if (Vector3.Distance(movementList[0].PieceToMove.transform.position, newPosition) < smoothDistance)
+        {
+            // update the movementList to remove this movement
             AdvanceMovementList();
         }
         else
         {
-            // TODO: Update this with the ability to add height to the movement
             movementList[0].PieceToMove.transform.position = Vector3.SmoothDamp(movementList[0].PieceToMove.transform.position, newPosition, ref velocity, timeToMove);
-        }        
+        }
+
+        heightTime += Time.deltaTime;
     }
 
     void AdvanceMovementList()
     {
+        heightTime = 0f;
+
         if(movementList.Count == 1)
         {
             // we have finished our list of movements
-            // TODO: Check if this was a scoring move, if it was, check if all the players pieces have been scored
             isAnimating = false;
 
             // if the movement is a scoring one check to see if it wins

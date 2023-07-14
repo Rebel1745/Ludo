@@ -18,23 +18,7 @@ public class PlayerPiece : MonoBehaviour
     
     int spacesToMove;
     public int TotalDistanceTravelled = 0;
-
-    // movement variables
-    Tile[] moveQueue;
-    int moveQueueIndex;
-    Vector3 targetPosition;
-    Vector3 velocity = Vector3.zero;
-    [SerializeField] float smoothTime = 0.25f;
-    [SerializeField] int smoothTimeMultiplier = 1;
-    float smoothDistance = 0.01f;
-    float maxHeight = 0.5f;
-    [SerializeField] int maxHeightMultiplier = 1;
-    [SerializeField] AnimationCurve heightCurve;
-    Vector3 targetPositionWithHeight;
-    float heightTime;
-    float targetHeight;
-
-    // new movement variables
+    
     List<PlayerPieceMovement> movementList;
 
     // Highlighting
@@ -45,6 +29,13 @@ public class PlayerPiece : MonoBehaviour
     [SerializeField] float defaultOutlineWidth = 3f;
     [SerializeField] Color selectableOutlineColour = Color.white;
     [SerializeField] float mouseOverOutlineWidth = 5f;
+
+    // sound
+    [Space]
+    [Header("Audio")]
+    [SerializeField] AudioClip pieceMovementSound;
+    [SerializeField] float minimumMovementSoundPitch = 1f;
+    [SerializeField] float maximumMovementSoundPitch = 1f;
 
 
     void Start()
@@ -192,7 +183,11 @@ public class PlayerPiece : MonoBehaviour
             {
                 PieceToMove = this,
                 DestinationTile = StartingTile,
-                InfoTextToDisplay = GameManager.instance.CurrentPlayerName + " moving to starting square"
+                InfoTextToDisplay = GameManager.instance.CurrentPlayerName + " moving to starting square",
+                PlaySound = true,
+                SoundToPlay = pieceMovementSound,
+                minimumPitch = minimumMovementSoundPitch,
+                maximumPitch = maximumMovementSoundPitch
             };
 
             movementList.Add(newMovement);
@@ -209,7 +204,11 @@ public class PlayerPiece : MonoBehaviour
                 newMovement = new PlayerPieceMovement
                 {
                     PieceToMove = this,
-                    DestinationTile = tilesAhead[i]
+                    DestinationTile = tilesAhead[i],
+                    PlaySound = true,
+                    SoundToPlay = pieceMovementSound,
+                    minimumPitch = minimumMovementSoundPitch,
+                    maximumPitch = maximumMovementSoundPitch
                     // TODO: sort out some text for moving a piece
                 };
 

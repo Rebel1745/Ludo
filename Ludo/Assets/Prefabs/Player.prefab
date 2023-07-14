@@ -169,17 +169,15 @@ MonoBehaviour:
   IsInYard: 1
   IsScored: 0
   CurrentTile: {fileID: 0}
-  isCurrentPlayerAnimation: 0
-  smoothTime: 0.1
-  smoothTimeMultiplier: 5
-  maxHeightMultiplier: 1
-  heightCurve:
-    serializedVersion: 2
-    m_Curve: []
-    m_PreInfinity: 2
-    m_PostInfinity: 2
-    m_RotationOrder: 4
+  TotalDistanceTravelled: 0
   pieceOutline: {fileID: 2501351128214225614}
+  defaultOutlineColour: {r: 0, g: 0, b: 0, a: 1}
+  defaultOutlineWidth: 3
+  selectableOutlineColour: {r: 1, g: 1, b: 1, a: 1}
+  mouseOverOutlineWidth: 5
+  pieceMovementSound: {fileID: 8300000, guid: 1003a0f85b7d6a743ac29093c20bfe79, type: 3}
+  minimumMovementSoundPitch: 0.95
+  maximumMovementSoundPitch: 1.05
 --- !u!114 &2501351128214225614
 MonoBehaviour:
   m_ObjectHideFlags: 0
