@@ -314,7 +314,7 @@ public class BoardManager : MonoBehaviour
             return tilesAhead;
         }
 
-        for (int i = 0; i < GameManager.instance.DiceTotal; i++)
+        for (int i = 0; i < DiceManager.instance.DiceTotal; i++)
         {
             // if there is no next tile then we have reached the scoring
             // break out of the loops and return null values for tiles that aren't there

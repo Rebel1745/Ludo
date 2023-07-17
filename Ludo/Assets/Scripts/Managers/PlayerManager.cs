@@ -79,7 +79,7 @@ public class PlayerManager : MonoBehaviour
             if (pieceToSendHome != null)
                 pieceToSendHome.SendPieceHome(pieceToSendHome, GameManager.instance.MaximumRollAgain + " 6's thrown in a row. Go back home!", true);
             else
-                GameManager.instance.UpdateGameState(GameState.NextTurn);
+                GameManager.instance.UpdateGameState(GameState.NextTurn, GameManager.instance.TimeBetweenTurns);
         }
         else
         {
@@ -214,7 +214,7 @@ public class PlayerManager : MonoBehaviour
                     Players[i].FinishedPosition = playersFinished + 1;
                 }
             }
-            GameManager.instance.UpdateGameState(GameState.GameOver);
+            GameManager.instance.UpdateGameState(GameState.GameOver, 1f);
         }
         else
         {
@@ -226,10 +226,10 @@ public class PlayerManager : MonoBehaviour
     void MoveToNextTurn()
     {
         //allow another roll if a 6 was rolled, otherwise move on to next turn
-        if (GameManager.instance.DiceTotal == 6 && GameManager.instance.CurrentPlayerRollAgainCount < GameManager.instance.MaximumRollAgain)
+        if (DiceManager.instance.DiceTotal == 6 && GameManager.instance.CurrentPlayerRollAgainCount < GameManager.instance.MaximumRollAgain)
             GameManager.instance.UpdateGameState(GameState.RollAgain);
         else
-            GameManager.instance.UpdateGameState(GameState.NextTurn);
+            GameManager.instance.UpdateGameState(GameState.NextTurn, GameManager.instance.TimeBetweenTurns);
     }
 
     public void SetMovementList(List<PlayerPieceMovement> ppms)
@@ -293,7 +293,7 @@ public class PlayerManager : MonoBehaviour
                 newPlayerPiece = newPlayer.GetComponent<PlayerPiece>();
                 newPlayerPiece.GetComponentInChildren<Renderer>().material = playerMaterials[i];
                 // setup the piece
-                newPlayerPiece.SetupPlayerPiece(i, newPlayerDetails.PlayerName, startingYardTile, scoredTile, playerStartingTiles[i]);
+                newPlayerPiece.SetupPlayerPiece(i, newPlayerDetails.PlayerName, startingYardTile, scoredTile, playerStartingTiles[i], newPlayerDetails.isCPU);
 
                 // add this piece to the player array
                 Players[i].PlayerPieces[j] = newPlayerPiece;
@@ -329,7 +329,7 @@ public class PlayerManager : MonoBehaviour
             for (int j = 0; j < Players[i].PlayerPieces.Length; j++)
             {
                 pp = Players[i].PlayerPieces[j];
-                pp.SetupPlayerPiece(i, pp.PlayerName, pp.StartingYardTile, pp.ScoringTile, playerStartingTiles[i]);
+                pp.SetupPlayerPiece(i, pp.PlayerName, pp.StartingYardTile, pp.ScoringTile, playerStartingTiles[i], Players[i].IsPlayerCPU);
             }
         }
 
@@ -355,7 +355,7 @@ public class PlayerManager : MonoBehaviour
 
     public bool PlayerPieceHasLegalMove(PlayerPiece pp)
     {
-        int diceTotal = GameManager.instance.DiceTotal;
+        int diceTotal = DiceManager.instance.DiceTotal;
 
         // if the piece has already scored then it can't have any legal moves
         if (pp.IsScored)

@@ -6190,8 +6190,6 @@ MonoBehaviour:
   diceImage: {fileID: 636990787191133793}
   rollTheDiceButton: {fileID: 636990785652946049}
   IsUsingDiceImage: 1
-  timeForDiceToRoll: 0
-  timeBetweenDiceUpdates: 0.05
 --- !u!1 &784913805
 GameObject:
   m_ObjectHideFlags: 0
@@ -7179,12 +7177,14 @@ MonoBehaviour:
   infoText: {fileID: 636990785506929064}
   gameOverPlayerDetailsHolder: {fileID: 1389558493}
   State: 0
-  DiceTotal: 0
   CurrentPlayerId: 0
   CurrentPlayerName: 
   IsCurrentPlayerCPU: 0
   CurrentPlayerRollAgainCount: 0
   MaximumRollAgain: 3
+  TimeBetweenTurns: 0.1
+  TimeForDiceRoll: 1
+  TimeBetweenDiceUpdates: 0.05
   IsAITesting: 1
   MaxGamesToTest: 20
 --- !u!1001 &911415601

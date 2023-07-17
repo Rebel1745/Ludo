@@ -15,9 +15,9 @@ public class DiceManager : MonoBehaviour
 
     bool isRolling = false;
     public bool IsUsingDiceImage = false;
-    [SerializeField] float timeForDiceToRoll = 1f;
-    [SerializeField] float timeBetweenDiceUpdates = 0.05f;
     float currentTimeBetweenDiceUpdates;
+
+    public int DiceTotal { get; protected set; }
 
     void Start()
     {
@@ -68,7 +68,7 @@ public class DiceManager : MonoBehaviour
     {
         currentTimeBetweenDiceUpdates += Time.deltaTime;
 
-        if (currentTimeBetweenDiceUpdates >= timeBetweenDiceUpdates)
+        if (currentTimeBetweenDiceUpdates >= GameManager.instance.TimeBetweenDiceUpdates)
         {
             SetDice(Random.Range(1, 7));
             currentTimeBetweenDiceUpdates = 0;
@@ -80,21 +80,21 @@ public class DiceManager : MonoBehaviour
     {
         currentTimeBetweenDiceUpdates = 0f;
         isRolling = true;
-        Invoke("StopRolling", timeForDiceToRoll);
+        Invoke("StopRolling", GameManager.instance.TimeForDiceRoll);
     }
 
     void StopRolling()
     {
         // random number between 1 and 6 for the dice roll
-        int rolledNum = Random.Range(1, 7);
+        DiceTotal = Random.Range(1, 7);
         /*if (GameManager.instance.CurrentPlayerId == 0)
            rolledNum = 6;*/
-        GameManager.instance.DiceTotal = rolledNum;
-        SetDice(rolledNum);
+
+        SetDice(DiceTotal);
 
         isRolling = false;
 
-        if(rolledNum == 6)
+        if(DiceTotal == 6)
         {
             GameManager.instance.CurrentPlayerRollAgainCount++;
             GameManager.instance.UpdateGameState(GameState.CheckForMultipleSixes);

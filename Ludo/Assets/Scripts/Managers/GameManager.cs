@@ -12,9 +12,8 @@ public class GameManager : MonoBehaviour
 
     public GameState State;
 
-    public int DiceTotal;
-
-    // Players
+    [Space()]
+    [Header("Current Player Info")]
     int totalPlayers;
     public int CurrentPlayerId;
     public string CurrentPlayerName;
@@ -22,6 +21,12 @@ public class GameManager : MonoBehaviour
 
     public int CurrentPlayerRollAgainCount = 0;
     public int MaximumRollAgain = 3;
+
+    [Space()]
+    [Header("Timing")]
+    public float TimeBetweenTurns = 1f;
+    public float TimeForDiceRoll = 1f;
+    public float TimeBetweenDiceUpdates = 0.05f;
 
     [Space()]
     [Header("AI Testing")]
@@ -41,7 +46,7 @@ public class GameManager : MonoBehaviour
         UpdateGameState(GameState.BuildBoard);
     }
 
-    public void UpdateGameState(GameState newState)
+    public void UpdateGameState(GameState newState, float delay = 0f)
     {
         State = newState;
 
@@ -54,7 +59,7 @@ public class GameManager : MonoBehaviour
                 SelectPlayerDetails();
                 break;
             case GameState.SetupGame:
-                SetupGame();
+                StartCoroutine("SetupGame", 1f);
                 break;
             case GameState.WaitingForRoll:
                 WaitingForRoll();
@@ -67,7 +72,10 @@ public class GameManager : MonoBehaviour
                 if (PlayerManager.instance.PlayerHasLegalMove())
                     UpdateGameState(GameState.WaitingForClick);
                 else
-                    UpdateGameState(GameState.NextTurn);
+                {
+                    SetInfoText(CurrentPlayerName + ", You have no legal moves");
+                    UpdateGameState(GameState.NextTurn, TimeBetweenTurns);
+                }
                 break;
             case GameState.WaitingForClick:
                 WaitingForClick();
@@ -76,19 +84,21 @@ public class GameManager : MonoBehaviour
                 WaitingForAnimation();
                 break;
             case GameState.NextTurn:
-                NextTurn();
+                StartCoroutine( "NextTurn", delay);
                 break;
             case GameState.RollAgain:
                 RollAgain();
                 break;
             case GameState.GameOver:
-                GameOver();
+                StartCoroutine("GameOver", delay);
                 break;
         }
     }
 
-    void GameOver()
+    IEnumerator GameOver(float delay)
     {
+        yield return new WaitForSeconds(delay);
+
         // show game over screen with positions
         UIManager.instance.ShowGameOverUI();
         Player currentPlayer;
@@ -152,7 +162,7 @@ public class GameManager : MonoBehaviour
         }        
     }
 
-    void SetupGame()
+    void SetupGame(float delay)
     {
         // Setup the variables that control player names and ids
         totalPlayers = PlayerManager.instance.Players.Length;
@@ -170,16 +180,18 @@ public class GameManager : MonoBehaviour
         IsCurrentPlayerCPU = PlayerManager.instance.Players[CurrentPlayerId].IsPlayerCPU;
     }
 
-    private void RollAgain()
+    void RollAgain()
     {
         // another turn is as easy as just going back to before the dice has been rolled
         UpdateGameState(GameState.WaitingForRoll);
     }
 
-    private void NextTurn()
+    IEnumerator NextTurn(float delay)
     {
         // first remove the selectable highlighting from the previous players pieces
         PlayerManager.instance.RemoveHighlightFromPlayerPieces(CurrentPlayerId);
+
+        yield return new WaitForSeconds(delay);
 
         // advance player
         CurrentPlayerId = (CurrentPlayerId + 1) % totalPlayers;
@@ -188,7 +200,7 @@ public class GameManager : MonoBehaviour
 
         // if the player has finished the game, move on to the next player
         if (PlayerManager.instance.Players[CurrentPlayerId].IsFinished)
-            UpdateGameState(GameState.NextTurn);
+            UpdateGameState(GameState.NextTurn, 0f);
         else
             UpdateGameState(GameState.WaitingForRoll);     
     }

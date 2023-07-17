@@ -94,7 +94,7 @@ public class AIManager : MonoBehaviour
     float GetPieceGoodness(PlayerPiece pp)
     {
         Tile currentTile = pp.CurrentTile;
-        Tile futureTile = BoardManager.instance.GetTileAhead(pp, GameManager.instance.DiceTotal);
+        Tile futureTile = BoardManager.instance.GetTileAhead(pp, DiceManager.instance.DiceTotal);
 
         // add a little random noise to the outcome
         float goodness = Random.Range(-0.1f, 0.1f);
@@ -135,7 +135,7 @@ public class AIManager : MonoBehaviour
         }
 
         // special cases for a 6
-        if(GameManager.instance.DiceTotal == 6)
+        if(DiceManager.instance.DiceTotal == 6)
         {
             PlayerPiece[] piecesInYard = PlayerManager.instance.GetPiecesInYard();
             PlayerPiece[] piecesOnBoard = PlayerManager.instance.GetPiecesOnBoard();

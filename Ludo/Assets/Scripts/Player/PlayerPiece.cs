@@ -43,7 +43,7 @@ public class PlayerPiece : MonoBehaviour
         movementList = new List<PlayerPieceMovement>();
     }
 
-    public void SetupPlayerPiece(int id, string playerName, Tile yardTile, Tile scoredTile, Tile startingTile)
+    public void SetupPlayerPiece(int id, string playerName, Tile yardTile, Tile scoredTile, Tile startingTile, bool cpu)
     {
         PlayerId = id;
         PlayerName = playerName;
@@ -56,12 +56,16 @@ public class PlayerPiece : MonoBehaviour
         this.transform.position = yardTile.transform.position;
         // set the PlayerPiece on the tile
         yardTile.PlayerPieces.Add(this);
+        IsCPU = cpu;
     }
 
     public void OutlineLegalPiece()
     {
-        pieceOutline.OutlineColor = selectableOutlineColour;
-        pieceOutline.OutlineWidth = defaultOutlineWidth;
+        if (!IsCPU)
+        {
+            pieceOutline.OutlineColor = selectableOutlineColour;
+            pieceOutline.OutlineWidth = defaultOutlineWidth;
+        }
     }
 
     public void RemoveLegalPieceOutline()
@@ -72,7 +76,7 @@ public class PlayerPiece : MonoBehaviour
 
     void ShowPossiblePieceMovement()
     {
-        Tile[] tilesAhead = BoardManager.instance.GetTilesAhead(this, GameManager.instance.DiceTotal);
+        Tile[] tilesAhead = BoardManager.instance.GetTilesAhead(this, DiceManager.instance.DiceTotal);
 
         // first, show the stuff from the current tile
         CurrentTile.MovementIndicator.SetActive(true);
@@ -93,7 +97,7 @@ public class PlayerPiece : MonoBehaviour
 
     void RemovePossiblePieceMovement()
     {
-        Tile[] tilesAhead = BoardManager.instance.GetTilesAhead(this, GameManager.instance.DiceTotal);
+        Tile[] tilesAhead = BoardManager.instance.GetTilesAhead(this, DiceManager.instance.DiceTotal);
 
         CurrentTile.MovementIndicator.SetActive(false);
 
@@ -113,7 +117,7 @@ public class PlayerPiece : MonoBehaviour
 
     private void OnMouseOver()
     {
-        if (CanWeClickIt() && !PlayerManager.instance.Players[this.PlayerId].IsPlayerCPU)
+        if (CanWeClickIt())
         {
             pieceOutline.OutlineColor = selectableOutlineColour;
             pieceOutline.OutlineWidth = mouseOverOutlineWidth;
@@ -143,6 +147,9 @@ public class PlayerPiece : MonoBehaviour
         if (GameManager.instance.State != GameState.WaitingForClick)
             return false;
 
+        if (IsCPU)
+            return false;
+
         // Check if this piece belongs to us, if not then we can't click on it
         if (PlayerId != GameManager.instance.CurrentPlayerId)
             return false;
@@ -167,7 +174,7 @@ public class PlayerPiece : MonoBehaviour
     public void BuildMovementList()
     {
         Tile initialTile = CurrentTile;
-        Tile[] tilesAhead = new Tile[GameManager.instance.DiceTotal];
+        Tile[] tilesAhead = new Tile[DiceManager.instance.DiceTotal];
 
         movementList.Clear();
 
@@ -176,8 +183,9 @@ public class PlayerPiece : MonoBehaviour
         RearrangeMultiplePieces(initialTile);
 
         PlayerPieceMovement newMovement;
+        string textToDisplay = "";
 
-        if (IsInYard && GameManager.instance.DiceTotal == 6)
+        if (IsInYard && DiceManager.instance.DiceTotal == 6)
         {
             newMovement = new PlayerPieceMovement
             {
@@ -197,10 +205,11 @@ public class PlayerPiece : MonoBehaviour
         }
         else
         {
-            tilesAhead = BoardManager.instance.GetTilesAhead(this, GameManager.instance.DiceTotal);
+            tilesAhead = BoardManager.instance.GetTilesAhead(this, DiceManager.instance.DiceTotal);
 
             for (int i = 0; i < tilesAhead.Length; i++)
             {
+                textToDisplay = i == 0 ? "1" : textToDisplay + "..." + (i + 1);
                 newMovement = new PlayerPieceMovement
                 {
                     PieceToMove = this,
@@ -208,8 +217,8 @@ public class PlayerPiece : MonoBehaviour
                     PlaySound = true,
                     SoundToPlay = pieceMovementSound,
                     minimumPitch = minimumMovementSoundPitch,
-                    maximumPitch = maximumMovementSoundPitch
-                    // TODO: sort out some text for moving a piece
+                    maximumPitch = maximumMovementSoundPitch,
+                    InfoTextToDisplay = textToDisplay
                 };
 
                 movementList.Add(newMovement);
