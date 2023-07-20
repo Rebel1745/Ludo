@@ -15,6 +15,7 @@ public class AudioManager : MonoBehaviour
     public void PlayAudioClip(AudioClip clip, float minPitch = 1f, float maxPitch = 1f)
     {
         source.pitch = Random.Range(minPitch, maxPitch);
+        source.volume = SettingsManager.instance.SoundVolume;
         source.PlayOneShot(clip);
     }
 }

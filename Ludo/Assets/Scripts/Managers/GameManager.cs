@@ -11,6 +11,7 @@ public class GameManager : MonoBehaviour
     [SerializeField] GameObject gameOverPlayerDetailsHolder;
 
     public GameState State;
+    public GameState PreviousState;
 
     [Space()]
     [Header("Current Player Info")]
@@ -43,15 +44,33 @@ public class GameManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        UpdateGameState(GameState.BuildBoard);
+        UpdateGameState(GameState.StartScreen);
+    }
+
+    public void RevertToPreviousState()
+    {
+        UpdateGameState(PreviousState);
     }
 
     public void UpdateGameState(GameState newState, float delay = 0f)
     {
+        PreviousState = State;
         State = newState;
 
         switch (newState)
         {
+            case GameState.StartScreen:
+                ShowStartScreen();
+                break;
+            case GameState.OptionsScreen:
+                ShowOptionsScreen();
+                break;
+            case GameState.SettingsScreen:
+                ShowSettingsScreen();
+                break;
+            case GameState.PauseScreen:
+                ShowPauseScreen();
+                break;
             case GameState.BuildBoard:
                 BoardManager.instance.BuildBoard();
                 break;
@@ -95,12 +114,33 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    void ShowStartScreen()
+    {
+        UIManager.instance.ShowHideUIElement(UIManager.instance.StartScreenUI, true);
+    }
+
+    void ShowOptionsScreen()
+    {
+        UIManager.instance.ShowHideUIElement(UIManager.instance.OptionsScreenUI, true);
+    }
+
+    void ShowSettingsScreen()
+    {
+        UIManager.instance.ShowHideUIElement(UIManager.instance.SettingsScreenUI, true);
+    }
+
+    void ShowPauseScreen()
+    {
+        UIManager.instance.ShowHideUIElement(UIManager.instance.PauseScreenUI, true);
+    }
+
     IEnumerator GameOver(float delay)
     {
         yield return new WaitForSeconds(delay);
 
         // show game over screen with positions
-        UIManager.instance.ShowGameOverUI();
+        //UIManager.instance.ShowGameOverUI();
+        UIManager.instance.ShowHideUIElement(UIManager.instance.GameOverUI, true);
         Player currentPlayer;
 
         // loop through the players and set the game over details according to their finished positions
@@ -169,7 +209,8 @@ public class GameManager : MonoBehaviour
         CurrentPlayerId = 0;
         UpdateCurrentPlayerDetails();
         // Activate the GameUI
-        UIManager.instance.ShowGameUI();
+        //UIManager.instance.ShowGameUI();
+        UIManager.instance.ShowHideUIElement(UIManager.instance.GameUI, true);
         // Start the game by changing the state to WaitingForRoll
         UpdateGameState(GameState.WaitingForRoll);
     }
@@ -225,7 +266,8 @@ public class GameManager : MonoBehaviour
 
     private void SelectPlayerDetails()
     {
-        UIManager.instance.ShowPlayerSelectScreen();
+        //UIManager.instance.ShowPlayerSelectScreen();
+        UIManager.instance.ShowHideUIElement(UIManager.instance.PlayerSelectUI, true);
     }
 
     public void SetInfoText(string newText)
@@ -241,6 +283,10 @@ public class GameManager : MonoBehaviour
 
 public enum GameState
 {
+    StartScreen,
+    OptionsScreen,
+    SettingsScreen,
+    PauseScreen,
     BuildBoard,
     SelectPlayerDetails,
     SetupGame,

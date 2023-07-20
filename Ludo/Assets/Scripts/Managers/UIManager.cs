@@ -5,38 +5,22 @@ using UnityEngine;
 public class UIManager : MonoBehaviour
 {
     public static UIManager instance;
-    [SerializeField] GameObject playerSelectUI;
-    [SerializeField] GameObject gameUI;
-    [SerializeField] GameObject gameOverUI;
+    public GameObject PlayerSelectUI;
+    public GameObject GameUI;
+    public GameObject GameOverUI;
+    public GameObject StartScreenUI;
+    public GameObject OptionsScreenUI;
+    public GameObject SettingsScreenUI;
+    public GameObject PauseScreenUI;
 
     private void Awake()
     {
         instance = this;
     }
 
-    public void ShowPlayerSelectScreen()
+    public void ShowHideUIElement(GameObject element, bool show)
     {
-        playerSelectUI.SetActive(true);
-    }
-
-    public void HidePlayerSelectScreen()
-    {
-        playerSelectUI.SetActive(false);
-    }
-
-    public void ShowGameOverUI()
-    {
-        gameOverUI.SetActive(true);
-    }
-
-    public void HideGameOverUI()
-    {
-        gameOverUI.SetActive(false);
-    }
-
-    public void ShowGameUI()
-    {
-        gameUI.SetActive(true);
+        element.SetActive(show);
     }
 
     public void PlayAgain()
