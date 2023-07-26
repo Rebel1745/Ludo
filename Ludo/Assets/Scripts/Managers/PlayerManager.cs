@@ -25,7 +25,6 @@ public class PlayerManager : MonoBehaviour
     Vector3 newPosition;
     Vector3 velocity = Vector3.zero;
     [SerializeField] float smoothTime = 0.25f;
-    [SerializeField] float smoothTimeMultiplier = 1;
     [SerializeField] float smoothDistance = 0.01f;
     [SerializeField] float audioDistance = 0.1f;
     float timeToMove;
@@ -33,7 +32,6 @@ public class PlayerManager : MonoBehaviour
     // height
     [Header("Height")]
     float maxHeight = 0.5f;
-    [SerializeField] int maxHeightMultiplier = 1;
     [SerializeField] AnimationCurve heightCurve;
     float heightTime;
     float targetHeight;
@@ -79,7 +77,7 @@ public class PlayerManager : MonoBehaviour
             if (pieceToSendHome != null)
                 pieceToSendHome.SendPieceHome(pieceToSendHome, GameManager.instance.MaximumRollAgain + " 6's thrown in a row. Go back home!", true);
             else
-                GameManager.instance.UpdateGameState(GameState.NextTurn, GameManager.instance.TimeBetweenTurns);
+                GameManager.instance.UpdateGameState(GameState.NextTurn, SettingsManager.instance.TimeBetweenTurns);
         }
         else
         {
@@ -107,10 +105,10 @@ public class PlayerManager : MonoBehaviour
     void MovePieces()
     {
         // is the movement instant?
-        timeToMove = movementList[0].IsInstantMovement ? 0 : (smoothTime / smoothTimeMultiplier);
+        timeToMove = movementList[0].IsInstantMovement ? 0 : (smoothTime / SettingsManager.instance.PieceSpeedMultiplier);
 
         // calculate the height to add at the current position
-        targetHeight = heightCurve.Evaluate(heightTime / smoothTime) * maxHeight * maxHeightMultiplier;
+        targetHeight = heightCurve.Evaluate(heightTime / smoothTime) * maxHeight * SettingsManager.instance.PieceHeightMultiplier;
 
         // if we aren't moving to a new tile and are just rearranging pieces on a single tile, make the movement instantaneous
         if (movementList[0].DestinationTile == null)
@@ -229,7 +227,7 @@ public class PlayerManager : MonoBehaviour
         if (DiceManager.instance.DiceTotal == 6 && GameManager.instance.CurrentPlayerRollAgainCount < GameManager.instance.MaximumRollAgain)
             GameManager.instance.UpdateGameState(GameState.RollAgain);
         else
-            GameManager.instance.UpdateGameState(GameState.NextTurn, GameManager.instance.TimeBetweenTurns);
+            GameManager.instance.UpdateGameState(GameState.NextTurn, SettingsManager.instance.TimeBetweenTurns);
     }
 
     public void SetMovementList(List<PlayerPieceMovement> ppms)

@@ -25,8 +25,6 @@ public class GameManager : MonoBehaviour
 
     [Space()]
     [Header("Timing")]
-    public float TimeBetweenTurns = 1f;
-    public float TimeForDiceRoll = 1f;
     public float TimeBetweenDiceUpdates = 0.05f;
 
     [Space()]
@@ -62,9 +60,6 @@ public class GameManager : MonoBehaviour
             case GameState.StartScreen:
                 ShowStartScreen();
                 break;
-            case GameState.OptionsScreen:
-                ShowOptionsScreen();
-                break;
             case GameState.SettingsScreen:
                 ShowSettingsScreen();
                 break;
@@ -93,7 +88,7 @@ public class GameManager : MonoBehaviour
                 else
                 {
                     SetInfoText(CurrentPlayerName + ", You have no legal moves");
-                    UpdateGameState(GameState.NextTurn, TimeBetweenTurns);
+                    UpdateGameState(GameState.NextTurn, SettingsManager.instance.TimeBetweenTurns);
                 }
                 break;
             case GameState.WaitingForClick:
@@ -117,11 +112,6 @@ public class GameManager : MonoBehaviour
     void ShowStartScreen()
     {
         UIManager.instance.ShowHideUIElement(UIManager.instance.StartScreenUI, true);
-    }
-
-    void ShowOptionsScreen()
-    {
-        UIManager.instance.ShowHideUIElement(UIManager.instance.OptionsScreenUI, true);
     }
 
     void ShowSettingsScreen()
@@ -284,7 +274,6 @@ public class GameManager : MonoBehaviour
 public enum GameState
 {
     StartScreen,
-    OptionsScreen,
     SettingsScreen,
     PauseScreen,
     BuildBoard,

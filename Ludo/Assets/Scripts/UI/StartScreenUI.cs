@@ -10,12 +10,6 @@ public class StartScreenUI : MonoBehaviour
         GameManager.instance.UpdateGameState(GameState.BuildBoard);
     }
 
-    public void ShowOptionsScreen()
-    {
-        UIManager.instance.ShowHideUIElement(UIManager.instance.StartScreenUI, false);
-        GameManager.instance.UpdateGameState(GameState.OptionsScreen);
-    }
-
     public void ShowSettingsScreen()
     {
         UIManager.instance.ShowHideUIElement(UIManager.instance.StartScreenUI, false);

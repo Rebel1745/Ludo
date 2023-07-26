@@ -9,7 +9,6 @@ public class UIManager : MonoBehaviour
     public GameObject GameUI;
     public GameObject GameOverUI;
     public GameObject StartScreenUI;
-    public GameObject OptionsScreenUI;
     public GameObject SettingsScreenUI;
     public GameObject PauseScreenUI;
 

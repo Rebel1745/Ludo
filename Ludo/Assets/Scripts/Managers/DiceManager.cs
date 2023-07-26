@@ -80,7 +80,7 @@ public class DiceManager : MonoBehaviour
     {
         currentTimeBetweenDiceUpdates = 0f;
         isRolling = true;
-        Invoke("StopRolling", GameManager.instance.TimeForDiceRoll);
+        Invoke("StopRolling", SettingsManager.instance.DiceRollTime);
     }
 
     void StopRolling()
