@@ -2,23 +2,29 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+[RequireComponent(typeof(UINavigation))]
 public class PauseScreenUI : MonoBehaviour
 {
     public void Back()
     {
-        UIManager.instance.ShowHideUIElement(UIManager.instance.PauseScreenUI, false);
-        GameManager.instance.RevertToPreviousState();
+        gameObject.GetComponent<UINavigation>().CloseUIAndRevertToReferer();
+    }
+
+    public void ShowSettingsScreen()
+    {
+        UIManager.instance.ShowHideUIElement(UIManager.instance.PauseScreenUI, false, GameState.PauseScreen);
+        GameManager.instance.UpdateGameState(GameState.SettingsScreen);
     }
 
     public void ShowHidePauseMenu()
     {
         if (UIManager.instance.PauseScreenUI.activeSelf)
         {
-            UIManager.instance.ShowHideUIElement(UIManager.instance.PauseScreenUI, false);
+            gameObject.GetComponent<UINavigation>().CloseUIAndRevertToReferer();
         }
         else
         {
-            UIManager.instance.ShowHideUIElement(UIManager.instance.PauseScreenUI, true);
+            GameManager.instance.UpdateGameState(GameState.PauseScreen);
         }
     }
 }

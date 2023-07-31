@@ -6,13 +6,13 @@ public class StartScreenUI : MonoBehaviour
 {
     public void StartGame()
     {
-        UIManager.instance.ShowHideUIElement(UIManager.instance.StartScreenUI, false);
+        UIManager.instance.ShowHideUIElement(UIManager.instance.StartScreenUI, false, GameManager.instance.State);
         GameManager.instance.UpdateGameState(GameState.BuildBoard);
     }
 
     public void ShowSettingsScreen()
     {
-        UIManager.instance.ShowHideUIElement(UIManager.instance.StartScreenUI, false);
+        UIManager.instance.ShowHideUIElement(UIManager.instance.StartScreenUI, false, GameManager.instance.State);
         GameManager.instance.UpdateGameState(GameState.SettingsScreen);
     }
 

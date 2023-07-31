@@ -17,9 +17,18 @@ public class UIManager : MonoBehaviour
         instance = this;
     }
 
-    public void ShowHideUIElement(GameObject element, bool show)
+    public void ShowHideUIElement(GameObject element, bool show, GameState referer)
     {
         element.SetActive(show);
+
+        UINavigation nav = element.GetComponent<UINavigation>();
+        if(nav != null)
+        {
+            if (show)
+                nav.SetReferer(referer);
+            else
+                nav.CloseUIAndRevertToReferer();
+        }
     }
 
     public void PlayAgain()

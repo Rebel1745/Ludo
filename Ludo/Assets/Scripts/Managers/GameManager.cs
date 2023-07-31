@@ -45,11 +45,6 @@ public class GameManager : MonoBehaviour
         UpdateGameState(GameState.StartScreen);
     }
 
-    public void RevertToPreviousState()
-    {
-        UpdateGameState(PreviousState);
-    }
-
     public void UpdateGameState(GameState newState, float delay = 0f)
     {
         PreviousState = State;
@@ -111,17 +106,17 @@ public class GameManager : MonoBehaviour
 
     void ShowStartScreen()
     {
-        UIManager.instance.ShowHideUIElement(UIManager.instance.StartScreenUI, true);
+        UIManager.instance.ShowHideUIElement(UIManager.instance.StartScreenUI, true, PreviousState);
     }
 
     void ShowSettingsScreen()
     {
-        UIManager.instance.ShowHideUIElement(UIManager.instance.SettingsScreenUI, true);
+        UIManager.instance.ShowHideUIElement(UIManager.instance.SettingsScreenUI, true, PreviousState);
     }
 
     void ShowPauseScreen()
     {
-        UIManager.instance.ShowHideUIElement(UIManager.instance.PauseScreenUI, true);
+        UIManager.instance.ShowHideUIElement(UIManager.instance.PauseScreenUI, true, PreviousState);
     }
 
     IEnumerator GameOver(float delay)
@@ -129,8 +124,7 @@ public class GameManager : MonoBehaviour
         yield return new WaitForSeconds(delay);
 
         // show game over screen with positions
-        //UIManager.instance.ShowGameOverUI();
-        UIManager.instance.ShowHideUIElement(UIManager.instance.GameOverUI, true);
+        UIManager.instance.ShowHideUIElement(UIManager.instance.GameOverUI, true, State);
         Player currentPlayer;
 
         // loop through the players and set the game over details according to their finished positions
@@ -200,7 +194,7 @@ public class GameManager : MonoBehaviour
         UpdateCurrentPlayerDetails();
         // Activate the GameUI
         //UIManager.instance.ShowGameUI();
-        UIManager.instance.ShowHideUIElement(UIManager.instance.GameUI, true);
+        UIManager.instance.ShowHideUIElement(UIManager.instance.GameUI, true, State);
         // Start the game by changing the state to WaitingForRoll
         UpdateGameState(GameState.WaitingForRoll);
     }
@@ -257,7 +251,7 @@ public class GameManager : MonoBehaviour
     private void SelectPlayerDetails()
     {
         //UIManager.instance.ShowPlayerSelectScreen();
-        UIManager.instance.ShowHideUIElement(UIManager.instance.PlayerSelectUI, true);
+        UIManager.instance.ShowHideUIElement(UIManager.instance.PlayerSelectUI, true, State);
     }
 
     public void SetInfoText(string newText)

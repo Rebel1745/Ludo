@@ -5718,6 +5718,7 @@ GameObject:
   m_Component:
   - component: {fileID: 462503527}
   - component: {fileID: 462503528}
+  - component: {fileID: 462503529}
   m_Layer: 5
   m_Name: SettingsScreenUI
   m_TagString: Untagged
@@ -5771,6 +5772,18 @@ MonoBehaviour:
   speedDropdown: {fileID: 324581037}
   diceSpeedDropdown: {fileID: 684953087}
   turnTimeDropdown: {fileID: 1423007616}
+--- !u!114 &462503529
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 462503526}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f304ed56d09d8c7478cec69e97c43f60, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &463706025
 GameObject:
   m_ObjectHideFlags: 0
@@ -8580,6 +8593,7 @@ GameObject:
   m_Component:
   - component: {fileID: 759556596}
   - component: {fileID: 759556597}
+  - component: {fileID: 759556598}
   m_Layer: 5
   m_Name: PauseScreenUI
   m_TagString: Untagged
@@ -8622,6 +8636,18 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 10e468af028e2cc459c496478527b0b1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &759556598
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 759556595}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f304ed56d09d8c7478cec69e97c43f60, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1001 &767904894
@@ -11571,8 +11597,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 497091319}
-        m_TargetAssemblyTypeName: StartScreenUI, Assembly-CSharp
+      - m_Target: {fileID: 759556597}
+        m_TargetAssemblyTypeName: PauseScreenUI, Assembly-CSharp
         m_MethodName: ShowSettingsScreen
         m_Mode: 1
         m_Arguments:

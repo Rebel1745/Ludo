@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 
+[RequireComponent(typeof(UINavigation))]
 public class SettingsScreenUI : MonoBehaviour
 {
     [SerializeField] Slider volumeSlider;
@@ -209,13 +210,8 @@ public class SettingsScreenUI : MonoBehaviour
 
     public void Back()
     {
-        SaveSettings();
-        UIManager.instance.ShowHideUIElement(UIManager.instance.SettingsScreenUI, false);
-        GameManager.instance.RevertToPreviousState();
-    }
-
-    void SaveSettings()
-    {
-
+        gameObject.GetComponent<UINavigation>().CloseUIAndRevertToReferer();
+        //UIManager.instance.ShowHideUIElement(UIManager.instance.SettingsScreenUI, false);
+        //GameManager.instance.RevertToPreviousState();
     }
 }

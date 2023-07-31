@@ -303,7 +303,7 @@ public class PlayerManager : MonoBehaviour
         }
 
         //UIManager.instance.HidePlayerSelectScreen();
-        UIManager.instance.ShowHideUIElement(UIManager.instance.PlayerSelectUI, false);
+        UIManager.instance.ShowHideUIElement(UIManager.instance.PlayerSelectUI, false, GameManager.instance.State);
 
         // after the players have been created move the game on
         GameManager.instance.UpdateGameState(GameState.SetupGame);
@@ -315,7 +315,7 @@ public class PlayerManager : MonoBehaviour
         BoardManager.instance.ResetBoard();
 
         //UIManager.instance.HideGameOverUI();
-        UIManager.instance.ShowHideUIElement(UIManager.instance.GameOverUI, false);
+        UIManager.instance.ShowHideUIElement(UIManager.instance.GameOverUI, false, GameManager.instance.State);
         playersFinished = 0;
 
         PlayerPiece pp;
