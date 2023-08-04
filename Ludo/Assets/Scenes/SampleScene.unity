@@ -18465,6 +18465,30 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   source: {fileID: 1482761262}
+  PieceMovement: {fileID: 8300000, guid: 1003a0f85b7d6a743ac29093c20bfe79, type: 3}
+  MinimumMovementSoundPitch: 0.95
+  MaximumMovementSoundPitch: 1.05
+  PieceBopped:
+  - {fileID: 8300000, guid: b0fd6c33d0b807145946b94798ae3bc0, type: 3}
+  PieceScored:
+  - {fileID: 8300000, guid: ef79cacc3c813b242ba1402ebfb7462b, type: 3}
+  DiceRoll: {fileID: 8300000, guid: ecbb4e4759059bd45ab5e676fb826693, type: 3}
+  DiceRollOne:
+  - {fileID: 8300000, guid: 9ce90527691cb7a47bb3454fb9366041, type: 3}
+  DiceRollTwo:
+  - {fileID: 8300000, guid: 2ba1d22bdab1ae642bfafb8ea0f40116, type: 3}
+  DiceRollThree:
+  - {fileID: 8300000, guid: b872ffd917f9f2b4895c168ac630d334, type: 3}
+  DiceRollFour:
+  - {fileID: 8300000, guid: ff7f37aad41731a4ea28fe2ddf1f170e, type: 3}
+  DiceRollFive:
+  - {fileID: 8300000, guid: c45c0d74c6705b247a0c5ba735073a47, type: 3}
+  DiceRollSix:
+  - {fileID: 8300000, guid: 02c6acd9d82643143b71bfeab53ed47b, type: 3}
+  DiceRollThirdSix:
+  - {fileID: 8300000, guid: 1ee55874fd74dbc49986f49a16fd31c6, type: 3}
+  - {fileID: 8300000, guid: 02e523af974c0f140ada94fd6dca1415, type: 3}
+  - {fileID: 8300000, guid: b0fd6c33d0b807145946b94798ae3bc0, type: 3}
 --- !u!1001 &1490009237
 PrefabInstance:
   m_ObjectHideFlags: 0

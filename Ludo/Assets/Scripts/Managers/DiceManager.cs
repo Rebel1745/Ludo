@@ -80,6 +80,7 @@ public class DiceManager : MonoBehaviour
     {
         currentTimeBetweenDiceUpdates = 0f;
         isRolling = true;
+        AudioManager.instance.PlayAudioClip(AudioManager.instance.DiceRoll);
         Invoke("StopRolling", SettingsManager.instance.DiceRollTime);
     }
 
@@ -94,6 +95,8 @@ public class DiceManager : MonoBehaviour
 
         isRolling = false;
 
+        AudioClip randomAudioClip = GetAudioClipFromDiceRoll(DiceTotal);
+
         if(DiceTotal == 6)
         {
             GameManager.instance.CurrentPlayerRollAgainCount++;
@@ -102,8 +105,34 @@ public class DiceManager : MonoBehaviour
         else
         {
             // move on to check if the player has a legal move
+            AudioManager.instance.PlayAudioClip(randomAudioClip);
             GameManager.instance.UpdateGameState(GameState.CheckForLegalMove);
         }
+    }
+
+    AudioClip GetAudioClipFromDiceRoll(int roll)
+    {
+        AudioClip returnClip = null;
+
+        switch (roll) {
+            case 1:
+                returnClip = AudioManager.instance.DiceRollOne[Random.Range(0, AudioManager.instance.DiceRollOne.Length - 1)];
+                break;
+            case 2:
+                returnClip = AudioManager.instance.DiceRollTwo[Random.Range(0, AudioManager.instance.DiceRollTwo.Length - 1)];
+                break;
+            case 3:
+                returnClip = AudioManager.instance.DiceRollThree[Random.Range(0, AudioManager.instance.DiceRollThree.Length - 1)];
+                break;
+            case 4:
+                returnClip = AudioManager.instance.DiceRollFour[Random.Range(0, AudioManager.instance.DiceRollFour.Length - 1)];
+                break;
+            case 5:
+                returnClip = AudioManager.instance.DiceRollFive[Random.Range(0, AudioManager.instance.DiceRollFive.Length - 1)];
+                break;
+        }
+
+        return returnClip;
     }
 
     public void SetDice(int number)

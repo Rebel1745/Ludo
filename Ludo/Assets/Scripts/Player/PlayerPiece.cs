@@ -1,5 +1,3 @@
-using System;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -29,13 +27,6 @@ public class PlayerPiece : MonoBehaviour
     [SerializeField] float defaultOutlineWidth = 3f;
     [SerializeField] Color selectableOutlineColour = Color.white;
     [SerializeField] float mouseOverOutlineWidth = 5f;
-
-    // sound
-    [Space]
-    [Header("Audio")]
-    [SerializeField] AudioClip pieceMovementSound;
-    [SerializeField] float minimumMovementSoundPitch = 1f;
-    [SerializeField] float maximumMovementSoundPitch = 1f;
 
 
     void Start()
@@ -193,9 +184,9 @@ public class PlayerPiece : MonoBehaviour
                 DestinationTile = StartingTile,
                 InfoTextToDisplay = GameManager.instance.CurrentPlayerName + " moving to starting square",
                 PlaySound = true,
-                SoundToPlay = pieceMovementSound,
-                minimumPitch = minimumMovementSoundPitch,
-                maximumPitch = maximumMovementSoundPitch
+                SoundToPlay = AudioManager.instance.PieceMovement,
+                minimumPitch = AudioManager.instance.MinimumMovementSoundPitch,
+                maximumPitch = AudioManager.instance.MaximumMovementSoundPitch
             };
 
             movementList.Add(newMovement);
@@ -215,9 +206,9 @@ public class PlayerPiece : MonoBehaviour
                     PieceToMove = this,
                     DestinationTile = tilesAhead[i],
                     PlaySound = true,
-                    SoundToPlay = pieceMovementSound,
-                    minimumPitch = minimumMovementSoundPitch,
-                    maximumPitch = maximumMovementSoundPitch,
+                    SoundToPlay = AudioManager.instance.PieceMovement,
+                    minimumPitch = AudioManager.instance.MinimumMovementSoundPitch,
+                    maximumPitch = AudioManager.instance.MaximumMovementSoundPitch,
                     InfoTextToDisplay = textToDisplay
                 };
 
@@ -284,13 +275,16 @@ public class PlayerPiece : MonoBehaviour
         // if it is, add a movement to the 'scored' area
         if (CurrentTile.IsScoringTile)
         {
+            int randomSoundIndex = Random.Range(0, AudioManager.instance.PieceScored.Length - 1);
             // this piece has scored
             newMovement = new PlayerPieceMovement
             {
                 PieceToMove = this,
                 DestinationTile = ScoringTile,
                 InfoTextToDisplay = "Congratulations, " + this.gameObject.name + " has scored!",
-                IsScoringMove = true
+                IsScoringMove = true,
+                PlaySound = true,
+                SoundToPlay = AudioManager.instance.PieceScored[randomSoundIndex]
             };
 
             movementList.Add(newMovement);
@@ -417,11 +411,15 @@ public class PlayerPiece : MonoBehaviour
 
     public void SendPieceHome(PlayerPiece pp, string reason, bool onlyMovement)
     {
+        int randomSoundIndex = Random.Range(0, AudioManager.instance.PieceBopped.Length - 1);
+
         PlayerPieceMovement newMovement = new PlayerPieceMovement
         {
             PieceToMove = pp,
             DestinationTile = pp.StartingYardTile,
-            InfoTextToDisplay = reason
+            InfoTextToDisplay = reason,
+            PlaySound = true,
+            SoundToPlay = AudioManager.instance.PieceBopped[randomSoundIndex]
         };
 
         movementList.Add(newMovement);
