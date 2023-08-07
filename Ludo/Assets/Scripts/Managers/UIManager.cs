@@ -35,4 +35,14 @@ public class UIManager : MonoBehaviour
     {
         PlayerManager.instance.ResetGame();
     }
+
+    public void QuitGame()
+    {
+        Application.Quit();
+    }
+
+    public void MainMenu()
+    {
+        GameManager.instance.UpdateGameState(GameState.StartScreen);
+    }
 }

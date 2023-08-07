@@ -5,7 +5,8 @@ using UnityEngine;
 public class AudioManager : MonoBehaviour
 {
     public static AudioManager instance;
-    [SerializeField] AudioSource source;
+    [SerializeField] AudioSource sourceSFX; // sound effects
+    [SerializeField] AudioSource sourceBg; // background music
     public AudioClip PieceMovement;
     public float MinimumMovementSoundPitch = 1f;
     public float MaximumMovementSoundPitch = 1f;
@@ -27,8 +28,18 @@ public class AudioManager : MonoBehaviour
 
     public void PlayAudioClip(AudioClip clip, float minPitch = 1f, float maxPitch = 1f)
     {
-        source.pitch = Random.Range(minPitch, maxPitch);
-        source.volume = SettingsManager.instance.SoundVolume;
-        source.PlayOneShot(clip);
+        sourceSFX.pitch = Random.Range(minPitch, maxPitch);
+        sourceSFX.volume = SettingsManager.instance.SFXVolume;
+        sourceSFX.PlayOneShot(clip);
+    }
+
+    public void PlayBackgroundMusic()
+    {
+        sourceBg.Play();
+    }
+
+    public void SetMusicVolume(float vol)
+    {
+        sourceBg.volume = vol;
     }
 }

@@ -43,6 +43,7 @@ public class GameManager : MonoBehaviour
     void Start()
     {
         UpdateGameState(GameState.StartScreen);
+        AudioManager.instance.PlayBackgroundMusic();
     }
 
     public void UpdateGameState(GameState newState, float delay = 0f)

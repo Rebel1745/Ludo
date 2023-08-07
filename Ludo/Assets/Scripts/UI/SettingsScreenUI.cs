@@ -7,8 +7,11 @@ using TMPro;
 [RequireComponent(typeof(UINavigation))]
 public class SettingsScreenUI : MonoBehaviour
 {
-    [SerializeField] Slider volumeSlider;
-    [SerializeField] TMP_Text volumeText;
+    [SerializeField] Slider musicVolumeSlider;
+    [SerializeField] TMP_Text musicVolumeText;
+    [SerializeField] Slider sfxVolumeSlider;
+    [SerializeField] TMP_Text sfxVolumeText;
+    [SerializeField] Toggle playDiceReadoutToggle;
     [SerializeField] TMP_Dropdown heightDropdown;
     [SerializeField] TMP_Dropdown speedDropdown;
     [SerializeField] TMP_Dropdown diceSpeedDropdown;
@@ -22,8 +25,14 @@ public class SettingsScreenUI : MonoBehaviour
     void SetCurrentValues()
     {
         // volume
-        volumeText.text = (SettingsManager.instance.SoundVolume * 100).ToString();
-        volumeSlider.value = SettingsManager.instance.SoundVolume * 100;
+        sfxVolumeText.text = (SettingsManager.instance.SFXVolume * 100).ToString();
+        sfxVolumeSlider.value = SettingsManager.instance.SFXVolume * 100;
+
+        musicVolumeText.text = (SettingsManager.instance.MusicVolume * 100).ToString();
+        musicVolumeSlider.value = SettingsManager.instance.MusicVolume * 100;
+
+        // play dice readout
+        playDiceReadoutToggle.isOn = SettingsManager.instance.PlayDiceReadout;
 
         // height
         int heightChoice = 0;
@@ -110,10 +119,16 @@ public class SettingsScreenUI : MonoBehaviour
         turnTimeDropdown.value = turnTime;
     }
 
-    public void UpdateVolumeAmount()
+    public void UpdateMusicVolumeAmount()
     {
-        volumeText.text = volumeSlider.value.ToString();
-        SettingsManager.instance.SetSoundVolume((float)volumeSlider.value/100f);
+        musicVolumeText.text = musicVolumeSlider.value.ToString();
+        SettingsManager.instance.SetMusicVolume((float)musicVolumeSlider.value/100f);
+    }
+
+    public void UpdateSFXVolumeAmount()
+    {
+        sfxVolumeText.text = sfxVolumeSlider.value.ToString();
+        SettingsManager.instance.SetSFXVolume((float)sfxVolumeSlider.value/100f);
     }
 
     public void SetPieceHeight(int opt)
@@ -206,6 +221,11 @@ public class SettingsScreenUI : MonoBehaviour
         }
 
         SettingsManager.instance.SetTimeBetweenTurns(timeModifier);
+    }
+
+    public void SetPlayDiceReadout(bool play)
+    {
+        SettingsManager.instance.SetPlayDiceReadout(play);
     }
 
     public void Back()

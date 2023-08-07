@@ -105,7 +105,8 @@ public class DiceManager : MonoBehaviour
         else
         {
             // move on to check if the player has a legal move
-            AudioManager.instance.PlayAudioClip(randomAudioClip);
+            if (SettingsManager.instance.PlayDiceReadout)
+                AudioManager.instance.PlayAudioClip(randomAudioClip);
             GameManager.instance.UpdateGameState(GameState.CheckForLegalMove);
         }
     }

@@ -82,7 +82,8 @@ public class PlayerManager : MonoBehaviour
         else
         {
             AudioClip clip = AudioManager.instance.DiceRollSix[Random.Range(0, AudioManager.instance.DiceRollSix.Length - 1)];
-            AudioManager.instance.PlayAudioClip(clip);
+            if (SettingsManager.instance.PlayDiceReadout)
+                AudioManager.instance.PlayAudioClip(clip);
             GameManager.instance.UpdateGameState(GameState.CheckForLegalMove);
         }
     }
