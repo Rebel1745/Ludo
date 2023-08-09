@@ -74,7 +74,7 @@ public class SettingsManager : MonoBehaviour
     void LoadSettings()
     {
         SFXVolume = PlayerPrefs.GetFloat("sfxvolume", 1f);
-        MusicVolume = PlayerPrefs.GetFloat("backgroundsoundvolume", 1f);
+        MusicVolume = PlayerPrefs.GetFloat("musicvolume", 1f);
         AudioManager.instance.SetMusicVolume(MusicVolume);
         PieceHeightMultiplier = PlayerPrefs.GetFloat("heightmultiplier", 1f);
         PieceSpeedMultiplier = PlayerPrefs.GetFloat("speedmultiplier", 1f);

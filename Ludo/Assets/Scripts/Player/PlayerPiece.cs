@@ -412,6 +412,7 @@ public class PlayerPiece : MonoBehaviour
     public void SendPieceHome(PlayerPiece pp, string reason, bool onlyMovement)
     {
         int randomSoundIndex = Random.Range(0, AudioManager.instance.PieceBopped.Length - 1);
+        Tile curTile = pp.CurrentTile;
 
         PlayerPieceMovement newMovement = new PlayerPieceMovement
         {
@@ -428,7 +429,10 @@ public class PlayerPiece : MonoBehaviour
         pp.IsInYard = true;
         pp.TotalDistanceTravelled = 0;
 
-        if(onlyMovement)
+        // if this was on a tile with another piece it should be rearranged
+        RearrangeMultiplePieces(curTile);
+
+        if (onlyMovement)
             PlayerManager.instance.SetMovementList(movementList);
     }
 }
