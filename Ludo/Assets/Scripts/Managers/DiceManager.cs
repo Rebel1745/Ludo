@@ -16,6 +16,7 @@ public class DiceManager : MonoBehaviour
     bool isRolling = false;
     public bool IsUsingDiceImage = false;
     float currentTimeBetweenDiceUpdates;
+    float currentRollingTime;
 
     public int DiceTotal { get; protected set; }
 
@@ -67,12 +68,16 @@ public class DiceManager : MonoBehaviour
     void UpdateDice()
     {
         currentTimeBetweenDiceUpdates += Time.deltaTime;
+        currentRollingTime += Time.deltaTime;
 
-        if (currentTimeBetweenDiceUpdates >= GameManager.instance.TimeBetweenDiceUpdates)
+        if (currentTimeBetweenDiceUpdates >= SettingsManager.instance.TimeBetweenDiceUpdates)
         {
             SetDice(Random.Range(1, 7));
             currentTimeBetweenDiceUpdates = 0;
         }
+
+        if (currentRollingTime >= SettingsManager.instance.DiceRollTime)
+            StopRolling();
 
     }
 
@@ -81,7 +86,9 @@ public class DiceManager : MonoBehaviour
         currentTimeBetweenDiceUpdates = 0f;
         isRolling = true;
         AudioManager.instance.PlayAudioClip(AudioManager.instance.DiceRoll);
-        Invoke("StopRolling", SettingsManager.instance.DiceRollTime);
+        currentRollingTime = 0;
+        // removing this Invoke as it messes with the pause function, use a time instead
+        //Invoke("StopRolling", SettingsManager.instance.DiceRollTime);
     }
 
     void StopRolling()

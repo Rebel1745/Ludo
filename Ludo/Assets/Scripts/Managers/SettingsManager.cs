@@ -11,8 +11,9 @@ public class SettingsManager : MonoBehaviour
     public float MusicVolume = 1f;
     public float PieceHeightMultiplier = 1f;
     public float PieceSpeedMultiplier = 1f;
-    public float DiceRollTime = 1f;
     public float TimeBetweenTurns = 1f;
+    public float DiceRollTime = 1f;
+    public float TimeBetweenDiceUpdates = 0.05f;
     public bool PlayDiceReadout = true;
 
     private void Awake()

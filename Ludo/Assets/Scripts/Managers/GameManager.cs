@@ -24,10 +24,6 @@ public class GameManager : MonoBehaviour
     public int MaximumRollAgain = 3;
 
     [Space()]
-    [Header("Timing")]
-    public float TimeBetweenDiceUpdates = 0.05f;
-
-    [Space()]
     [Header("AI Testing")]
     public bool IsAITesting = false;
     public int MaxGamesToTest = 10;
