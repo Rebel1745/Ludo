@@ -200,6 +200,7 @@ public class GameManager : MonoBehaviour
     {
         CurrentPlayerName = PlayerManager.instance.Players[CurrentPlayerId].PlayerName;
         IsCurrentPlayerCPU = PlayerManager.instance.Players[CurrentPlayerId].IsPlayerCPU;
+        UIManager.instance.ChangeInfoBoxColour(CurrentPlayerId);
     }
 
     void RollAgain()

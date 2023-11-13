@@ -1,6 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
+using TMPro;
 
 public class UIManager : MonoBehaviour
 {
@@ -12,9 +14,23 @@ public class UIManager : MonoBehaviour
     public GameObject SettingsScreenUI;
     public GameObject PauseScreenUI;
 
+    // Colours for the info box for each player
+    public Color[] PlayerInfoBoxColours;
+    public Color[] PlayerInfoTextColours;
+    public Image InfoBoxImage;
+    public TMP_Text InfoText;
+    public Texture2D[] CursorImages;
+
     private void Awake()
     {
         instance = this;
+    }
+
+    public void ChangeInfoBoxColour(int playerId)
+    {
+        InfoBoxImage.color = PlayerInfoBoxColours[playerId];
+        InfoText.color = PlayerInfoTextColours[playerId];
+        Cursor.SetCursor(CursorImages[playerId], Vector2.zero, CursorMode.Auto);
     }
 
     public void ShowHideUIElement(GameObject element, bool show, GameState referer)

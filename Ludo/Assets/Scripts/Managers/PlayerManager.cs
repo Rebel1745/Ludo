@@ -95,7 +95,7 @@ public class PlayerManager : MonoBehaviour
 
         foreach (PlayerPiece pp in Players[GameManager.instance.CurrentPlayerId].PlayerPieces)
         {
-            if(!pp.IsInYard && !pp.IsScored && pp.TotalDistanceTravelled > furthestDistance)
+            if(!pp.IsInYard && !pp.IsScored && !pp.CurrentTile.IsSafeTile && pp.TotalDistanceTravelled > furthestDistance)
             {
                 piece = pp;
                 furthestDistance = pp.TotalDistanceTravelled;
