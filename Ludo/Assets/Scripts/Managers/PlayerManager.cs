@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Security.Cryptography;
 using UnityEngine;
 
 public class PlayerManager : MonoBehaviour
@@ -70,7 +71,7 @@ public class PlayerManager : MonoBehaviour
 
     public void CheckForMultipleSixes()
     {
-        if(GameManager.instance.CurrentPlayerRollAgainCount >= GameManager.instance.MaximumRollAgain)
+        if (GameManager.instance.CurrentPlayerRollAgainCount >= GameManager.instance.MaximumRollAgain)
         {
             // we have exceeded the total number of 6's in a row, do something about it
             PlayerPiece pieceToSendHome = GetMostAdvancedPiece();
@@ -95,7 +96,7 @@ public class PlayerManager : MonoBehaviour
 
         foreach (PlayerPiece pp in Players[GameManager.instance.CurrentPlayerId].PlayerPieces)
         {
-            if(!pp.IsInYard && !pp.IsScored && !pp.CurrentTile.IsSafeTile && pp.TotalDistanceTravelled > furthestDistance)
+            if (!pp.IsInYard && !pp.IsScored && !pp.CurrentTile.IsSafeTile && pp.TotalDistanceTravelled > furthestDistance)
             {
                 piece = pp;
                 furthestDistance = pp.TotalDistanceTravelled;
@@ -148,7 +149,7 @@ public class PlayerManager : MonoBehaviour
     {
         heightTime = 0f;
 
-        if(movementList.Count == 1)
+        if (movementList.Count == 1)
         {
             // we have finished our list of movements
             isAnimating = false;
@@ -167,7 +168,7 @@ public class PlayerManager : MonoBehaviour
             // we still have movements left, remove the one we have just performed
             movementList.RemoveAt(0);
             // set the infoText to the new info text
-            if(movementList[0].InfoTextToDisplay != null && movementList[0].InfoTextToDisplay != "")
+            if (movementList[0].InfoTextToDisplay != null && movementList[0].InfoTextToDisplay != "")
                 GameManager.instance.SetInfoText(movementList[0].InfoTextToDisplay);
         }
     }
@@ -178,20 +179,21 @@ public class PlayerManager : MonoBehaviour
 
         bool allPiecesScored = true;
 
-        foreach(PlayerPiece pp in Players[playerPiece.PlayerId].PlayerPieces)
+        foreach (PlayerPiece pp in Players[playerPiece.PlayerId].PlayerPieces)
         {
             if (!pp.IsScored)
             {
                 allPiecesScored = false;
                 break;
-            }                
+            }
         }
 
         if (allPiecesScored)
         {
             SetPlayerFinished(playerPiece.PlayerId);
-        }            
-        else{
+        }
+        else
+        {
             movementList.Clear();
             MoveToNextTurn();
         }
@@ -223,7 +225,7 @@ public class PlayerManager : MonoBehaviour
             MoveToNextTurn();
         }
     }
-    
+
     void MoveToNextTurn()
     {
         //allow another roll if a 6 was rolled, otherwise move on to next turn
@@ -270,7 +272,7 @@ public class PlayerManager : MonoBehaviour
             };
 
             newPlayerParent.transform.parent = playersHolder.transform;
-            
+
             // setup the player details
             Players[i] = new Player
             {
@@ -290,7 +292,7 @@ public class PlayerManager : MonoBehaviour
                 // create a player piece on the yard tile
                 newPlayer = Instantiate(playerPrefab, startingYardTile.transform.position, Quaternion.identity, newPlayerParent.transform);
                 newPlayer.name = newPlayerDetails.PlayerName + " Piece " + (j + 1);
-                
+
                 newPlayerPiece = newPlayer.GetComponent<PlayerPiece>();
                 newPlayerPiece.GetComponentInChildren<Renderer>().material = playerMaterials[i];
                 // setup the piece
@@ -348,12 +350,26 @@ public class PlayerManager : MonoBehaviour
         foreach (PlayerPiece pp in Players[GameManager.instance.CurrentPlayerId].PlayerPieces)
         {
             // if any piece hs a legal move then the play can continue
-            if(PlayerPieceHasLegalMove(pp))
+            if (PlayerPieceHasLegalMove(pp))
                 return true;
         }
 
         // if there are no legal moves, return false and the play moves on to the next player
         return false;
+    }
+
+    public int PlayerLegalMoveCount()
+    {
+        int moveCount = 0;
+        foreach (PlayerPiece pp in Players[GameManager.instance.CurrentPlayerId].PlayerPieces)
+        {
+            // if any piece hs a legal move then the play can continue
+            if (PlayerPieceHasLegalMove(pp))
+                moveCount++;
+        }
+
+        // if there are no legal moves, return false and the play moves on to the next player
+        return moveCount;
     }
 
     public bool PlayerPieceHasLegalMove(PlayerPiece pp)
@@ -389,10 +405,22 @@ public class PlayerManager : MonoBehaviour
 
     public void HighlightPiecesWithLegalMove(int pId)
     {
-        foreach(PlayerPiece pp in Players[pId].PlayerPieces)
+        int moveCount = 0;
+        PlayerPiece pieceToMove = null;
+
+        foreach (PlayerPiece pp in Players[pId].PlayerPieces)
         {
             if (PlayerPieceHasLegalMove(pp))
+            {
+                moveCount++;
+                pieceToMove = pp;
                 pp.OutlineLegalPiece();
+            }
+        }
+        if (moveCount == 1 && SettingsManager.instance.AutomaticallyMoveIfOneLegalMove)
+        {
+            // we only have one possible move, so move it automatically if that setting is enabled
+            pieceToMove.MovePiece(true);
         }
     }
 
@@ -413,7 +441,7 @@ public class PlayerManager : MonoBehaviour
     {
         List<PlayerPiece> piecesInYard = new List<PlayerPiece>();
 
-        foreach(PlayerPiece pp in Players[pId].PlayerPieces)
+        foreach (PlayerPiece pp in Players[pId].PlayerPieces)
         {
             if (!pp.IsScored && pp.IsInYard)
                 piecesInYard.Add(pp);
@@ -431,7 +459,7 @@ public class PlayerManager : MonoBehaviour
     {
         List<PlayerPiece> piecesOnBoard = new List<PlayerPiece>();
 
-        foreach(PlayerPiece pp in Players[pId].PlayerPieces)
+        foreach (PlayerPiece pp in Players[pId].PlayerPieces)
         {
             if (!pp.IsScored && !pp.IsInYard)
                 piecesOnBoard.Add(pp);
@@ -449,7 +477,7 @@ public class PlayerManager : MonoBehaviour
     {
         List<PlayerPiece> scoredPieces = new List<PlayerPiece>();
 
-        foreach(PlayerPiece pp in Players[pId].PlayerPieces)
+        foreach (PlayerPiece pp in Players[pId].PlayerPieces)
         {
             if (pp.IsScored)
                 scoredPieces.Add(pp);

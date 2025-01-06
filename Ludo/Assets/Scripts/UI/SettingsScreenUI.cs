@@ -16,6 +16,8 @@ public class SettingsScreenUI : MonoBehaviour
     [SerializeField] TMP_Dropdown speedDropdown;
     [SerializeField] TMP_Dropdown diceSpeedDropdown;
     [SerializeField] TMP_Dropdown turnTimeDropdown;
+    [SerializeField] Toggle autoMove;
+    [SerializeField] Toggle use1Or6ToEscapeYard;
 
     private void Start()
     {
@@ -33,6 +35,8 @@ public class SettingsScreenUI : MonoBehaviour
 
         // play dice readout
         playDiceReadoutToggle.isOn = SettingsManager.instance.PlayDiceReadout;
+        autoMove.isOn = SettingsManager.instance.AutomaticallyMoveIfOneLegalMove;
+        use1Or6ToEscapeYard.isOn = SettingsManager.instance.Use1Or6ToEscapeYard;
 
         // height
         int heightChoice = 0;
@@ -41,16 +45,16 @@ public class SettingsScreenUI : MonoBehaviour
         {
             case 0f:
                 heightChoice = 0;
-            break;
+                break;
             case 0.5f:
                 heightChoice = 1;
-            break;
+                break;
             case 1f:
                 heightChoice = 2;
-            break;
+                break;
             case 3f:
                 heightChoice = 3;
-            break;
+                break;
         }
 
         heightDropdown.value = heightChoice;
@@ -122,13 +126,13 @@ public class SettingsScreenUI : MonoBehaviour
     public void UpdateMusicVolumeAmount()
     {
         musicVolumeText.text = musicVolumeSlider.value.ToString();
-        SettingsManager.instance.SetMusicVolume((float)musicVolumeSlider.value/100f);
+        SettingsManager.instance.SetMusicVolume((float)musicVolumeSlider.value / 100f);
     }
 
     public void UpdateSFXVolumeAmount()
     {
         sfxVolumeText.text = sfxVolumeSlider.value.ToString();
-        SettingsManager.instance.SetSFXVolume((float)sfxVolumeSlider.value/100f);
+        SettingsManager.instance.SetSFXVolume((float)sfxVolumeSlider.value / 100f);
     }
 
     public void SetPieceHeight(int opt)
@@ -139,16 +143,16 @@ public class SettingsScreenUI : MonoBehaviour
         {
             case 0:
                 heightModifier = 0f;
-            break;
+                break;
             case 1:
                 heightModifier = 0.5f;
-            break;
+                break;
             case 2:
                 heightModifier = 1f;
-            break;
+                break;
             case 3:
                 heightModifier = 3f;
-            break;            
+                break;
         }
 
         SettingsManager.instance.SetHeightMultiplier(heightModifier);
@@ -162,16 +166,16 @@ public class SettingsScreenUI : MonoBehaviour
         {
             case 0:
                 speedModifier = 0.5f;
-            break;
+                break;
             case 1:
                 speedModifier = 1f;
-            break;
+                break;
             case 2:
                 speedModifier = 3f;
-            break;
+                break;
             case 3:
                 speedModifier = 100f;
-            break;            
+                break;
         }
 
         SettingsManager.instance.SetSpeedMultiplier(speedModifier);
@@ -185,16 +189,16 @@ public class SettingsScreenUI : MonoBehaviour
         {
             case 0:
                 timeModifier = 2f;
-            break;
+                break;
             case 1:
                 timeModifier = 1f;
-            break;
+                break;
             case 2:
                 timeModifier = 0.5f;
-            break;
+                break;
             case 3:
                 timeModifier = 0f;
-            break;            
+                break;
         }
 
         SettingsManager.instance.SetDiceRollTime(timeModifier);
@@ -208,16 +212,16 @@ public class SettingsScreenUI : MonoBehaviour
         {
             case 0:
                 timeModifier = 2f;
-            break;
+                break;
             case 1:
                 timeModifier = 1f;
-            break;
+                break;
             case 2:
                 timeModifier = 0.5f;
-            break;
+                break;
             case 3:
                 timeModifier = 0f;
-            break;            
+                break;
         }
 
         SettingsManager.instance.SetTimeBetweenTurns(timeModifier);
@@ -226,6 +230,16 @@ public class SettingsScreenUI : MonoBehaviour
     public void SetPlayDiceReadout(bool play)
     {
         SettingsManager.instance.SetPlayDiceReadout(play);
+    }
+
+    public void SetAutomaticallyMoveIfOneLegalMove(bool move)
+    {
+        SettingsManager.instance.SetAutomaticallyMoveIfOneLegalMove(move);
+    }
+
+    public void Set1Or6ToEscapeYard(bool move)
+    {
+        SettingsManager.instance.Set1Or6ToEscapeYard(move);
     }
 
     public void Back()

@@ -13,10 +13,10 @@ public class PlayerPiece : MonoBehaviour
     public bool IsInYard = true; // all pieces start in their yard
     public bool IsScored = false;
     public Tile CurrentTile;
-    
+
     int spacesToMove;
     public int TotalDistanceTravelled = 0;
-    
+
     List<PlayerPieceMovement> movementList;
 
     // Highlighting
@@ -82,7 +82,7 @@ public class PlayerPiece : MonoBehaviour
             {
                 tilesAhead[i].MovementIndicator.SetActive(true);
                 tilesAhead[i].RotationPoint.LookAt(tilesAhead[i + 1].RotationPoint);
-            }            
+            }
         }
     }
 
@@ -94,7 +94,7 @@ public class PlayerPiece : MonoBehaviour
 
         for (int i = 0; i < tilesAhead.Length; i++)
         {
-            if(tilesAhead[i] != null)
+            if (tilesAhead[i] != null)
             {
                 tilesAhead[i].CentreBall.SetActive(false);
                 tilesAhead[i].MovementIndicator.SetActive(false);
@@ -114,7 +114,7 @@ public class PlayerPiece : MonoBehaviour
             pieceOutline.OutlineWidth = mouseOverOutlineWidth;
 
             // we only want to see a possible move, if we are on the board
-            if(!this.IsInYard)
+            if (!this.IsInYard)
                 ShowPossiblePieceMovement();
         }
     }
@@ -129,7 +129,7 @@ public class PlayerPiece : MonoBehaviour
                 RemovePossiblePieceMovement();
         }
         else
-            RemoveLegalPieceOutline();        
+            RemoveLegalPieceOutline();
     }
 
     bool CanWeClickIt()
@@ -154,15 +154,20 @@ public class PlayerPiece : MonoBehaviour
 
     private void OnMouseUp()
     {
-        if (CanWeClickIt())
-        {
-            if(!this.IsInYard)
-                RemovePossiblePieceMovement();
-            BuildMovementList();
-        }            
+        MovePiece(false);
     }
 
-    public void BuildMovementList()
+    public void MovePiece(bool autoMove)
+    {
+        if (CanWeClickIt())
+        {
+            if (!this.IsInYard)
+                RemovePossiblePieceMovement();
+            BuildMovementList(autoMove);
+        }
+    }
+
+    public void BuildMovementList(bool autoMove = false)
     {
         Tile initialTile = CurrentTile;
         Tile[] tilesAhead = new Tile[DiceManager.instance.DiceTotal];
@@ -209,7 +214,7 @@ public class PlayerPiece : MonoBehaviour
                     SoundToPlay = AudioManager.instance.PieceMovement,
                     minimumPitch = AudioManager.instance.MinimumMovementSoundPitch,
                     maximumPitch = AudioManager.instance.MaximumMovementSoundPitch,
-                    InfoTextToDisplay = textToDisplay
+                    InfoTextToDisplay = autoMove && SettingsManager.instance.AutomaticallyMoveIfOneLegalMove ? "(Automatically Moving) " + textToDisplay : textToDisplay
                 };
 
                 movementList.Add(newMovement);
@@ -220,10 +225,10 @@ public class PlayerPiece : MonoBehaviour
 
         // now check to see if we will land on anyone and if we do add them to the movement list with their destination as their yard
         // if there is a piece on the final tile, and that piece does not belong to the player currently moving
-        if(BoardManager.instance.TileContainsOpponentsPiece(CurrentTile))
+        if (BoardManager.instance.TileContainsOpponentsPiece(CurrentTile))
         {
             // we have landed on piece with at least one opponent on it, if it is only one, remove it. if not, remove us!
-            if(CurrentTile.PlayerPieces.Count == 1)
+            if (CurrentTile.PlayerPieces.Count == 1)
             {
                 // there is only one piece on this tile, send it home
                 PlayerPiece pieceToSendHome = CurrentTile.PlayerPieces[0];

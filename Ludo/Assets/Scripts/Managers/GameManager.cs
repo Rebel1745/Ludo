@@ -90,7 +90,7 @@ public class GameManager : MonoBehaviour
                 WaitingForAnimation();
                 break;
             case GameState.NextTurn:
-                StartCoroutine( "NextTurn", delay);
+                StartCoroutine("NextTurn", delay);
                 break;
             case GameState.RollAgain:
                 RollAgain();
@@ -157,7 +157,8 @@ public class GameManager : MonoBehaviour
                 }
 
                 // add the points to the AIType
-                switch (currentPlayer.CPUType) {
+                switch (currentPlayer.CPUType)
+                {
                     case AIType.Standard:
                         standardPoints += roundPoints;
                         break;
@@ -178,9 +179,9 @@ public class GameManager : MonoBehaviour
             }
             print("Standard: " + standardPoints + ". Aggressive: " + aggressivePoints + ". Cautious: " + cautiousPoints + ". Wild Card: " + wildcardPoints + ". Random: " + randomPoints);
 
-            if(gamesTested < MaxGamesToTest)
+            if (gamesTested < MaxGamesToTest)
                 PlayerManager.instance.ResetGame();
-        }        
+        }
     }
 
     void SetupGame(float delay)
@@ -225,13 +226,19 @@ public class GameManager : MonoBehaviour
         if (PlayerManager.instance.Players[CurrentPlayerId].IsFinished)
             UpdateGameState(GameState.NextTurn, 0f);
         else
-            UpdateGameState(GameState.WaitingForRoll);     
+            UpdateGameState(GameState.WaitingForRoll);
     }
 
     private void WaitingForClick()
     {
         PlayerManager.instance.HighlightPiecesWithLegalMove(CurrentPlayerId);
-        SetInfoText(CurrentPlayerName + " click piece to move");
+
+        int numberOfMoves = PlayerManager.instance.PlayerLegalMoveCount();
+
+        if (numberOfMoves > 1 || !SettingsManager.instance.AutomaticallyMoveIfOneLegalMove)
+            SetInfoText(CurrentPlayerName + " click piece to move");
+        else
+            SetInfoText("Only one legal move.  Moving Automatically");
     }
 
     private void WaitingForRoll()
