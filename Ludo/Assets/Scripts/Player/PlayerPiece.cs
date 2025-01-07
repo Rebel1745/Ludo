@@ -181,7 +181,7 @@ public class PlayerPiece : MonoBehaviour
         PlayerPieceMovement newMovement;
         string textToDisplay = "";
 
-        if (IsInYard && DiceManager.instance.DiceTotal == 6)
+        if (IsInYard && (DiceManager.instance.DiceTotal == 6 || (SettingsManager.instance.Use1Or6ToEscapeYard && DiceManager.instance.DiceTotal == 1 && PlayerManager.instance.GetPiecesInYard().Length == 4)))
         {
             newMovement = new PlayerPieceMovement
             {

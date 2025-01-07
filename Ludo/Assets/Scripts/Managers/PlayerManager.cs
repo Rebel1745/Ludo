@@ -384,7 +384,7 @@ public class PlayerManager : MonoBehaviour
         if (pp.IsInYard)
         {
             // we rolled a 6, we can get out of the yard
-            if (diceTotal == 6)
+            if (diceTotal == 6 || (SettingsManager.instance.Use1Or6ToEscapeYard && diceTotal == 1 && GetPiecesInYard().Length == 4))
                 return true;
             // no getting out of the yard
             else

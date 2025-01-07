@@ -29,7 +29,7 @@ public class BoardManager : MonoBehaviour
 
     GameObject newTileGO, prevTileGO = null, firstTileGO;
     Tile newTile, prevTile = null, firstTile;
-    
+
     // different tile holders
     GameObject yardHolder, scoredHolder, tileHolder;
     Tile[] startingTiles = new Tile[4];
@@ -60,7 +60,7 @@ public class BoardManager : MonoBehaviour
 
         for (int i = 0; i < allTiles.Length; i++)
         {
-            if(allTiles[i].PlayerPieces.Count != 0)
+            if (allTiles[i].PlayerPieces.Count != 0)
             {
                 // the player that finished 4th would still have had piece(s) on the board, remove them from the tiles when we start again
                 allTiles[i].PlayerPieces.Clear();
@@ -80,15 +80,15 @@ public class BoardManager : MonoBehaviour
         {
             GameObject playerScoredHolder = new GameObject { name = "Player " + (i + 1) + " Scored Pieces" };
             playerScoredHolder.transform.parent = scoredHolder.transform;
-            
-            startPos = (safeZoneDirections[i] + safeZoneDirections[(i + 1) % 4]) * (crossLength + 1);            
+
+            startPos = (safeZoneDirections[i] + safeZoneDirections[(i + 1) % 4]) * (crossLength + 1);
             scoredNo = 0;
 
             for (int j = 0; j < 4; j++)
             {
                 scoredNo++;
 
-                if(i % 2 == 0)
+                if (i % 2 == 0)
                 {
                     tilePos = startPos - (safeZoneDirections[i]) * j;
                     tilePos.z -= safeZoneDirections[i].z;
@@ -97,7 +97,7 @@ public class BoardManager : MonoBehaviour
                 {
                     tilePos = startPos - (safeZoneDirections[(i + 1) % 4] * j);
                     tilePos.z -= safeZoneDirections[(i + 1) % 4].z;
-                }                    
+                }
 
                 newTileGO = Instantiate(scoredTilePrefab, tilePos, Quaternion.identity, playerScoredHolder.transform);
                 newTileGO.name = "Player" + (i + 1) + "Scored" + scoredNo;
@@ -107,7 +107,7 @@ public class BoardManager : MonoBehaviour
 
     void CreateYardTiles()
     {
-        yardHolder = new GameObject { name = "Player Yards"  };
+        yardHolder = new GameObject { name = "Player Yards" };
         yardHolder.transform.parent = boardParent;
 
         Vector3 startPos, tilePos;
@@ -129,7 +129,7 @@ public class BoardManager : MonoBehaviour
                     yardNo++;
 
                     // TODO: I'm not really sure how this bit works... maybe clarify it in my mind a bit?
-                    if(i % 2 == 0)
+                    if (i % 2 == 0)
                         tilePos = new Vector3(startPos.x + safeZoneDirections[(i + 1) % 4].x * k, 0f, startPos.z + safeZoneDirections[i].z * j);
                     else
                         tilePos = new Vector3(startPos.x + safeZoneDirections[i].x * k, 0f, startPos.z + safeZoneDirections[(i + 1) % 4].z * j);
@@ -190,7 +190,7 @@ public class BoardManager : MonoBehaviour
                     newTileGO.name = "Player" + (Mathf.FloorToInt(dirCount / 3) + 1) + "StartingSquare";
                     startingTiles[Mathf.FloorToInt(dirCount / 3)] = newTile;
 
-                    if(prevTileGO != null)
+                    if (prevTileGO != null)
                     {
                         // the tile before a starting square is a branching square for that player
                         CreateBranchingTile(prevTileGO, prevTile, Mathf.FloorToInt(dirCount / 3));
@@ -201,7 +201,7 @@ public class BoardManager : MonoBehaviour
                     newTileGO.name = "Tile" + tileCount;
                 }
 
-                if(prevTileGO != null)
+                if (prevTileGO != null)
                 {
                     prevTile.NextTile = newTile;
                 }
@@ -210,7 +210,7 @@ public class BoardManager : MonoBehaviour
                 prevTileGO = newTileGO;
                 prevTile = newTile;
 
-                if(tileCount == 1)
+                if (tileCount == 1)
                 {
                     firstTile = newTile;
                     firstTileGO = newTileGO;
@@ -259,7 +259,7 @@ public class BoardManager : MonoBehaviour
             // TODO: Make the array decrement instead of increment so that the tiles are labled in the correct direction
             for (int j = 0; j < safeZoneLength; j++)
             {
-                pos = scoringTileGO.transform.position + (safeZoneDirections[i] * ( j + 1));
+                pos = scoringTileGO.transform.position + (safeZoneDirections[i] * (j + 1));
                 newTileGO = Instantiate(tilePrefab, pos, Quaternion.identity, playerHolder.transform);
                 newTileGO.name = "Player" + (i + 1) + "Safe" + (j + 1);
                 newTileGO.GetComponentInChildren<Renderer>().material = playerTileColours[i];
@@ -307,7 +307,7 @@ public class BoardManager : MonoBehaviour
         Tile destTile;
 
         // if this move would take us out of the yard then tilesAhead would just be the starting tile
-        if(pp.IsInYard && spacesAhead == 6)
+        if (pp.IsInYard && (spacesAhead == 6 || (SettingsManager.instance.Use1Or6ToEscapeYard && spacesAhead == 1 && PlayerManager.instance.GetPiecesInYard().Length == 4)))
         {
             tilesAhead = new Tile[1];
             tilesAhead[0] = pp.StartingTile;
