@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using System.Security;
 
 [RequireComponent(typeof(UINavigation))]
 public class SettingsScreenUI : MonoBehaviour
@@ -18,6 +19,7 @@ public class SettingsScreenUI : MonoBehaviour
     [SerializeField] TMP_Dropdown turnTimeDropdown;
     [SerializeField] Toggle autoMove;
     [SerializeField] Toggle use1Or6ToEscapeYard;
+    [SerializeField] Toggle finishAfterOnePlayerFinishes;
 
     private void Start()
     {
@@ -37,6 +39,7 @@ public class SettingsScreenUI : MonoBehaviour
         playDiceReadoutToggle.isOn = SettingsManager.instance.PlayDiceReadout;
         autoMove.isOn = SettingsManager.instance.AutomaticallyMoveIfOneLegalMove;
         use1Or6ToEscapeYard.isOn = SettingsManager.instance.Use1Or6ToEscapeYard;
+        finishAfterOnePlayerFinishes.isOn = SettingsManager.instance.FinishGameAfterOnePlayerFinishes;
 
         // height
         int heightChoice = 0;
@@ -240,6 +243,11 @@ public class SettingsScreenUI : MonoBehaviour
     public void Set1Or6ToEscapeYard(bool move)
     {
         SettingsManager.instance.Set1Or6ToEscapeYard(move);
+    }
+
+    public void SetFinishGameAfterOnePlayerFinishes(bool finish)
+    {
+        SettingsManager.instance.SetFinishGameAfterOnePlayerFinishes(finish);
     }
 
     public void Back()

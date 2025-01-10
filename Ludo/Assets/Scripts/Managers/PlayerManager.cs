@@ -1,6 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
-using System.Security.Cryptography;
+using System.Linq;
 using UnityEngine;
 
 public class PlayerManager : MonoBehaviour
@@ -206,7 +206,27 @@ public class PlayerManager : MonoBehaviour
         Players[pId].IsFinished = true;
         Players[pId].FinishedPosition = playersFinished;
 
-        if (playersFinished == Players.Length - 1)
+        // if the first player has finished, and the setting for game over after one player finishing is true, finish
+        if (SettingsManager.instance.FinishGameAfterOnePlayerFinishes)
+        {
+            // figure out the order of the remaining players.
+            // first consideration is counting the number of pieces that have made it home safely
+            Dictionary<int, int> playersList = new Dictionary<int, int>();
+            foreach (Player p in Players)
+            {
+                playersList.Add(p.PlayerId, p.FinishingOrderNumber);
+            }
+            playersList = playersList.OrderByDescending(pair => pair.Value).ToDictionary(pair => pair.Key, pair => pair.Value);
+
+            foreach (int playerId in playersList.Keys)
+            {
+                Players[playerId].IsFinished = true;
+                Players[playerId].FinishedPosition = playersFinished;
+                playersFinished++;
+            }
+            GameManager.instance.UpdateGameState(GameState.GameOver, 1f);
+        }
+        else if (playersFinished == Players.Length - 1)
         {
             // find the player that has not finished, and mark them as finished and last
             for (int i = 0; i < Players.Length; i++)

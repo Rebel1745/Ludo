@@ -17,6 +17,7 @@ public class SettingsManager : MonoBehaviour
     public bool PlayDiceReadout = true;
     public bool AutomaticallyMoveIfOneLegalMove = true;
     public bool Use1Or6ToEscapeYard = true;
+    public bool FinishGameAfterOnePlayerFinishes = true;
 
     private void Awake()
     {
@@ -92,6 +93,15 @@ public class SettingsManager : MonoBehaviour
             PlayerPrefs.SetInt("1or6", 0);
     }
 
+    public void SetFinishGameAfterOnePlayerFinishes(bool finish)
+    {
+        FinishGameAfterOnePlayerFinishes = finish;
+        if (finish)
+            PlayerPrefs.SetInt("finish", 1);
+        else
+            PlayerPrefs.SetInt("finish", 0);
+    }
+
     void LoadSettings()
     {
         SFXVolume = PlayerPrefs.GetFloat("sfxvolume", 1f);
@@ -104,5 +114,6 @@ public class SettingsManager : MonoBehaviour
         PlayDiceReadout = PlayerPrefs.GetInt("playdicereadout", 0) == 0 ? false : true;
         AutomaticallyMoveIfOneLegalMove = PlayerPrefs.GetInt("automove", 0) == 0 ? false : true;
         Use1Or6ToEscapeYard = PlayerPrefs.GetInt("1or6", 0) == 0 ? false : true;
+        FinishGameAfterOnePlayerFinishes = PlayerPrefs.GetInt("finish", 0) == 0 ? false : true;
     }
 }
