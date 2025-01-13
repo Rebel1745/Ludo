@@ -53,9 +53,15 @@ public class GameManager : MonoBehaviour
                 ShowStartScreen();
                 break;
             case GameState.SettingsScreen:
+                StopAllCoroutines();
                 ShowSettingsScreen();
                 break;
+            case GameState.RulesScreen:
+                StopAllCoroutines();
+                ShowRulesScreen();
+                break;
             case GameState.PauseScreen:
+                StopAllCoroutines();
                 ShowPauseScreen();
                 break;
             case GameState.BuildBoard:
@@ -109,6 +115,11 @@ public class GameManager : MonoBehaviour
     void ShowSettingsScreen()
     {
         UIManager.instance.ShowHideUIElement(UIManager.instance.SettingsScreenUI, true, PreviousState);
+    }
+
+    void ShowRulesScreen()
+    {
+        UIManager.instance.ShowHideUIElement(UIManager.instance.RulesScreenUI, true, PreviousState);
     }
 
     void ShowPauseScreen()
@@ -274,6 +285,7 @@ public enum GameState
 {
     StartScreen,
     SettingsScreen,
+    RulesScreen,
     PauseScreen,
     BuildBoard,
     SelectPlayerDetails,

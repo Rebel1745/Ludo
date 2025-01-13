@@ -11,6 +11,7 @@ public class UIManager : MonoBehaviour
     public GameObject GameUI;
     public GameObject GameOverUI;
     public GameObject StartScreenUI;
+    public GameObject RulesScreenUI;
     public GameObject SettingsScreenUI;
     public GameObject PauseScreenUI;
 
@@ -38,7 +39,7 @@ public class UIManager : MonoBehaviour
         element.SetActive(show);
 
         UINavigation nav = element.GetComponent<UINavigation>();
-        if(nav != null)
+        if (nav != null)
         {
             if (show)
                 nav.SetReferer(referer);

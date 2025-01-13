@@ -21,7 +21,7 @@ public class SettingsScreenUI : MonoBehaviour
     [SerializeField] Toggle use1Or6ToEscapeYard;
     [SerializeField] Toggle finishAfterOnePlayerFinishes;
 
-    private void Start()
+    private void OnEnable()
     {
         SetCurrentValues();
     }

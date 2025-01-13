@@ -10,6 +10,12 @@ public class PauseScreenUI : MonoBehaviour
         gameObject.GetComponent<UINavigation>().CloseUIAndRevertToReferer();
     }
 
+    public void ShowRulesScreen()
+    {
+        UIManager.instance.ShowHideUIElement(UIManager.instance.PauseScreenUI, false, GameState.PauseScreen);
+        GameManager.instance.UpdateGameState(GameState.RulesScreen);
+    }
+
     public void ShowSettingsScreen()
     {
         UIManager.instance.ShowHideUIElement(UIManager.instance.PauseScreenUI, false, GameState.PauseScreen);
