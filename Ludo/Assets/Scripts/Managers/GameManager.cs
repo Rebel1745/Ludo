@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
+using UnityEditor;
 
 public class GameManager : MonoBehaviour
 {
@@ -86,6 +87,8 @@ public class GameManager : MonoBehaviour
                 else
                 {
                     SetInfoText(CurrentPlayerName + ", You have no legal moves");
+                    PlayerManager.instance.Players[CurrentPlayerId].MissedTurns++;
+                    UpdateMissedTurnsText();
                     UpdateGameState(GameState.NextTurn, SettingsManager.instance.TimeBetweenTurns);
                 }
                 break;
@@ -133,13 +136,15 @@ public class GameManager : MonoBehaviour
 
         // show game over screen with positions
         UIManager.instance.ShowHideUIElement(UIManager.instance.GameOverUI, true, State);
+        // hide the game UI
+        UIManager.instance.ShowHideUIElement(UIManager.instance.GameUI, false, State);
         Player currentPlayer;
 
         // loop through the players and set the game over details according to their finished positions
         for (int i = 0; i < PlayerManager.instance.Players.Length; i++)
         {
             currentPlayer = PlayerManager.instance.Players[i];
-            gameOverPlayerDetailsHolder.transform.GetChild(currentPlayer.FinishedPosition - 1).GetComponent<GameOverDetails>().SetDetails(currentPlayer, currentPlayer.PlayerName, currentPlayer.PlayerColour);
+            gameOverPlayerDetailsHolder.transform.GetChild(currentPlayer.FinishedPosition - 1).GetComponent<GameOverDetails>().SetDetails(currentPlayer, currentPlayer.PlayerName + " (" + currentPlayer.MissedTurnsText + ")", currentPlayer.PlayerColour);
         }
 
         if (IsAITesting)
@@ -204,6 +209,7 @@ public class GameManager : MonoBehaviour
         // Activate the GameUI
         //UIManager.instance.ShowGameUI();
         UIManager.instance.ShowHideUIElement(UIManager.instance.GameUI, true, State);
+        UpdateMissedTurnsText();
         // Start the game by changing the state to WaitingForRoll
         UpdateGameState(GameState.WaitingForRoll);
     }
@@ -278,6 +284,14 @@ public class GameManager : MonoBehaviour
     public string GetInfoText()
     {
         return infoText.text;
+    }
+
+    private void UpdateMissedTurnsText()
+    {
+        for (int i = 0; i < PlayerManager.instance.Players.Length; i++)
+        {
+            UIManager.instance.MissedTurnsText[i].text = PlayerManager.instance.Players[i].MissedTurnsText;
+        }
     }
 }
 

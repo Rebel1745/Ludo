@@ -350,6 +350,7 @@ public class PlayerManager : MonoBehaviour
         {
             Players[i].IsFinished = false;
             Players[i].FinishedPosition = 0;
+            Players[i].MissedTurns = 0;
             // loop through the player pieces
             for (int j = 0; j < Players[i].PlayerPieces.Length; j++)
             {

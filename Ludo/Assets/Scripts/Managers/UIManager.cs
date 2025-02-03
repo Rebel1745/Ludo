@@ -21,6 +21,7 @@ public class UIManager : MonoBehaviour
     public Image InfoBoxImage;
     public TMP_Text InfoText;
     public Texture2D[] CursorImages;
+    public TMP_Text[] MissedTurnsText;
 
     private void Awake()
     {
@@ -60,6 +61,7 @@ public class UIManager : MonoBehaviour
 
     public void MainMenu()
     {
+        UIManager.instance.ShowHideUIElement(UIManager.instance.GameOverUI, false, GameState.StartScreen);
         GameManager.instance.UpdateGameState(GameState.StartScreen);
     }
 }
