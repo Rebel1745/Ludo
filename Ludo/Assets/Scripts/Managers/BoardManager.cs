@@ -142,9 +142,6 @@ public class BoardManager : MonoBehaviour
                 }
             }
         }
-
-
-
     }
 
     void CreateSurroundingTiles()

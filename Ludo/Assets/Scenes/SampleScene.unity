@@ -19449,6 +19449,9 @@ MonoBehaviour:
   - {r: 0, g: 0, b: 0, a: 1}
   InfoBoxImage: {fileID: 636990785959388987}
   InfoText: {fileID: 636990785506929064}
+  RollDiceImage: {fileID: 636990785652946048}
+  RollDiceText: {fileID: 636990785810190695}
+  DiceCountImage: {fileID: 636990787191133793}
   CursorImages:
   - {fileID: 2800000, guid: db2f80c10700a3341a93161834ede145, type: 3}
   - {fileID: 2800000, guid: a60b3a71bb5e3b74a8abcb385652d06a, type: 3}
@@ -31333,7 +31336,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 0}
-  m_RaycastTarget: 1
+  m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:

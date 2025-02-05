@@ -20,6 +20,9 @@ public class UIManager : MonoBehaviour
     public Color[] PlayerInfoTextColours;
     public Image InfoBoxImage;
     public TMP_Text InfoText;
+    public Image RollDiceImage;
+    public TMP_Text RollDiceText;
+    public Image DiceCountImage;
     public Texture2D[] CursorImages;
     public TMP_Text[] MissedTurnsText;
 
@@ -28,10 +31,13 @@ public class UIManager : MonoBehaviour
         instance = this;
     }
 
-    public void ChangeInfoBoxColour(int playerId)
+    public void ChangeUIColours(int playerId)
     {
         InfoBoxImage.color = PlayerInfoBoxColours[playerId];
         InfoText.color = PlayerInfoTextColours[playerId];
+        RollDiceImage.color = PlayerInfoBoxColours[playerId];
+        RollDiceText.color = PlayerInfoTextColours[playerId];
+        DiceCountImage.color = PlayerInfoBoxColours[playerId];
         Cursor.SetCursor(CursorImages[playerId], Vector2.zero, CursorMode.Auto);
     }
 

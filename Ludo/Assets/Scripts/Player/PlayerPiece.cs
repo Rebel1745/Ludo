@@ -71,16 +71,19 @@ public class PlayerPiece : MonoBehaviour
 
         // first, show the stuff from the current tile
         CurrentTile.MovementIndicator.SetActive(true);
+        CurrentTile.MovementIndicator.GetComponentInChildren<Renderer>().material = PlayerManager.instance.playerMaterials[GameManager.instance.CurrentPlayerId];
         CurrentTile.RotationPoint.LookAt(tilesAhead[0].RotationPoint);
 
         for (int i = 0; i < tilesAhead.Length; i++)
         {
             tilesAhead[i].CentreBall.SetActive(true);
+            tilesAhead[i].CentreBall.GetComponentInChildren<Renderer>().material = PlayerManager.instance.playerMaterials[GameManager.instance.CurrentPlayerId];
 
             // se only want to indicate to the next tile if there is one
             if (i < tilesAhead.Length - 1)
             {
                 tilesAhead[i].MovementIndicator.SetActive(true);
+                tilesAhead[i].MovementIndicator.GetComponentInChildren<Renderer>().material = PlayerManager.instance.playerMaterials[GameManager.instance.CurrentPlayerId];
                 tilesAhead[i].RotationPoint.LookAt(tilesAhead[i + 1].RotationPoint);
             }
         }

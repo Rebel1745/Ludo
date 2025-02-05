@@ -9,7 +9,7 @@ public class PlayerManager : MonoBehaviour
 
     [Header("Configuration")]
     Transform playerYardHolder; // the holding area for player pieces
-    [SerializeField] Material[] playerMaterials;
+    public Material[] playerMaterials;
     [SerializeField] GameObject playerPrefab;
     Tile[] playerStartingTiles;
     Transform playerScoredTileHolder;

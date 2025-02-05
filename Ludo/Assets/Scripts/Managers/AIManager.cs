@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Palmmedia.ReportGenerator.Core;
 using UnityEngine;
 
 public class AIManager : MonoBehaviour
@@ -58,7 +59,7 @@ public class AIManager : MonoBehaviour
         }
 
         // for testing, player 1 gets good AI, other players get random
-        if(currentAIType != AIType.Random)
+        if (currentAIType != AIType.Random)
             SelectPieceToMove(legalPieces.ToArray());
         else
             legalPieces[Random.Range(0, legalPieces.Count)].BuildMovementList();
@@ -70,7 +71,7 @@ public class AIManager : MonoBehaviour
         float pieceGoodness = -Mathf.Infinity;
         float currentGoodness;
 
-        if(legalPieces.Length == 1)
+        if (legalPieces.Length == 1)
         {
             legalPieces[0].BuildMovementList();
         }
@@ -88,7 +89,7 @@ public class AIManager : MonoBehaviour
             }
 
             pieceToMove.BuildMovementList();
-        }        
+        }
     }
 
     float GetPieceGoodness(PlayerPiece pp)
@@ -100,23 +101,26 @@ public class AIManager : MonoBehaviour
         float goodness = Random.Range(-0.1f, 0.1f);
         //float goodness = 0f;
 
-        // if we are currently safe, it is not important that we move
-        if (currentTile.IsSafeTile)
-            goodness -= 0.5f;
+        // if we are currently safe, it is not important that we move (unless we can score)
+        if (currentTile.IsSafeTile && !futureTile.IsScoringTile)
+            goodness += -0.5f;
+        // if our finishing position is dependent on how many pieces score, prioritise scoring
+        else if (futureTile.IsScoringTile && SettingsManager.instance.FinishGameAfterOnePlayerFinishes)
+            goodness += 1f;
 
         // if we aren't already safe but we can be, we probably should
         if (!currentTile.IsSafeTile && (futureTile.IsSafeTile || futureTile.IsScoringTile))
             goodness += 0.8f + cautionBonus;
 
-        // if we are currently with friends we are safe
-        if (currentTile.PlayerPieces.Count > 1)
+        // if we are currently with ONE other piece we are safe, unless we are already safe 
+        if (currentTile.PlayerPieces.Count == 2 && !currentTile.IsSafeTile)
             goodness += -0.5f - cautionBonus;
 
         // if there is a piece where we will land
-        if(futureTile.PlayerPieces.Count > 0)
+        if (futureTile.PlayerPieces.Count > 0)
         {
-            // if we would join our own piece on the tile it's good
-            if (futureTile.PlayerPieces[0].PlayerId == pp.PlayerId)
+            // if we would join our ONE own piece on the tile it's good
+            if (futureTile.PlayerPieces[0].PlayerId == pp.PlayerId && futureTile.PlayerPieces.Count == 1)
                 goodness += 0.5f + cautionBonus;
 
             // if there is only one enemy piece on the tile we can bop them off
@@ -128,14 +132,15 @@ public class AIManager : MonoBehaviour
                 goodness -= 100f;
         }
 
-        if (!currentTile.IsSafeTile) {
+        if (!currentTile.IsSafeTile)
+        {
             // calculate how far around the board the piece is
             float percentComplete = pp.TotalDistanceTravelled / BoardManager.instance.SurroundingTileCount;
             goodness += (percentComplete / 2f) + cautionBonus;
         }
 
         // special cases for a 6
-        if(DiceManager.instance.DiceTotal == 6)
+        if (DiceManager.instance.DiceTotal == 6)
         {
             PlayerPiece[] piecesInYard = PlayerManager.instance.GetPiecesInYard();
             PlayerPiece[] piecesOnBoard = PlayerManager.instance.GetPiecesOnBoard();
